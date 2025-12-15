@@ -1,0 +1,61 @@
+name: Docs and Build
+
+on:
+  push:
+    paths:
+      - "mkdocs.yml"
+      - "mkdocs.yaml"
+      - "docs/**"
+      - "pyproject.toml"
+      - ".github/workflows/docs-build.yml"
+  pull_request:
+    paths:
+      - "mkdocs.yml"
+      - "mkdocs.yaml"
+      - "docs/**"
+      - "pyproject.toml"
+      - ".github/workflows/docs-build.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  docs-build:
+    # Only run if there is MkDocs or Sphinx config present
+    if: >
+      hashFiles('mkdocs.yml', 'mkdocs.yaml', 'docs/conf.py') != ''
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Sync dependencies (runtime + dev)
+        run: |
+          # Assumes mkdocs / sphinx are in your dev group when you actually use them
+          uv sync
+
+      - name: Build docs / project
+        run: |
+          if [ -f "mkdocs.yml" ] || [ -f "mkdocs.yaml" ]; then
+            echo "Detected MkDocs config, building docs..."
+            uv run mkdocs build --strict
+          elif [ -f "docs/conf.py" ]; then
+            echo "Detected Sphinx config, building docs..."
+            uv run sphinx-build -b html docs docs/_build -W
+          else
+            echo "No docs configuration found; nothing to do."
+          fi
+      - name: Package build check
+        run: |
+          uv build

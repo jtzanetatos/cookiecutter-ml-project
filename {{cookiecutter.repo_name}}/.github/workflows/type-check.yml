@@ -1,0 +1,40 @@
+name: Type Check
+
+on:
+  push:
+    paths:
+      - "**.py"
+      - "pyproject.toml"
+      - ".github/workflows/type-check.yml"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  mypy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Sync dependencies (runtime + dev)
+        run: |
+          # Installs [project].dependencies + [dependency-groups].dev
+          # mypy must be in the `dev` group in pyproject.toml
+          uv sync
+
+      - name: Run mypy
+        run: |
+          # Adjust paths to match your layout
+          uv run mypy src tests

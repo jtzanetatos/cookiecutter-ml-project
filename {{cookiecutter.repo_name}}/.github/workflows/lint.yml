@@ -1,0 +1,49 @@
+name: Lint
+
+on:
+  push:
+    paths:
+      - "**.py"
+      - "pyproject.toml"
+      - ".github/workflows/lint.yml"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          # Use a single Python version; template requires >=3.12
+          python-version: ${{ matrix.python-version }}
+          # Optional but recommended for speed:
+          enable-cache: true
+
+      - name: Sync dependencies (runtime + dev)
+        run: |
+          # Installs [project].dependencies + [dependency-groups].dev
+          # No extras (gpu, notebooks, etc.) are installed by default.
+          uv sync
+
+      - name: Ruff (lint + format check)
+        run: |
+          uv run ruff check . --output-format=github
+          uv run ruff format --check .
+
+      - name: Codespell
+        run: |
+          uv run codespell \
+            --ignore-words-list="nd,teh,fo" \
+            --skip=".git,.venv,venv,.mypy_cache,.pytest_cache,.dvc,.idea,.vscode,*.ipynb,*.png,*.jpg,*.jpeg,*.svg,*.ico,models,artifacts,data" \
+            .
