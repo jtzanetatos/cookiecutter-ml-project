@@ -5,10 +5,14 @@ from dataclasses import dataclass
 from typing import Any, Optional
 
 import anyio
-from loguru import logger
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-
 import mlflow
+from loguru import logger
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 
 @dataclass(frozen=True)
@@ -23,7 +27,11 @@ class ModelServiceConfig:
         tracking_uri = os.environ["MLFLOW_TRACKING_URI"]
         model_name = os.environ["MLFLOW_MODEL_NAME"]
         model_alias = os.getenv("MLFLOW_MODEL_ALIAS", "prod")
-        load_on_startup = os.getenv("LOAD_MODEL_ON_STARTUP", "true").lower() in ("1", "true", "yes")
+        load_on_startup = os.getenv("LOAD_MODEL_ON_STARTUP", "true").lower() in (
+            "1",
+            "true",
+            "yes",
+        )
         return ModelServiceConfig(
             tracking_uri=tracking_uri,
             model_name=model_name,

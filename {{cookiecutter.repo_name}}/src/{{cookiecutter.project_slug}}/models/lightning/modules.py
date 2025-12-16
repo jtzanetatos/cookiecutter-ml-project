@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import pytorch_lightning as pl
 import torch
 from torch import nn
-import pytorch_lightning as pl
+
 
 class ClassificationModule(pl.LightningModule):
     def __init__(self, model: nn.Module, lr: float = 1e-3, weight_decay: float = 0.0):
@@ -32,4 +33,6 @@ class ClassificationModule(pl.LightningModule):
         return {"val_loss": loss, "val_acc": acc}
 
     def configure_optimizers(self):
-        return torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+        return torch.optim.AdamW(
+            self.parameters(), lr=self.lr, weight_decay=self.weight_decay
+        )

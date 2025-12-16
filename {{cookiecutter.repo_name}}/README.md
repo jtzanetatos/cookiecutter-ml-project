@@ -7,7 +7,7 @@
 
 <p align="center">
   <!-- Version -->
-  <img src="https://img.shields.io/github/v/tag/{{cookiecutter.github_owner}}/{{cookiecutter.repo_name}}?label=version" alt="Version">
+  <img src="https://img.shields.io/github/v/tag/{{cookiecutter.owner}}/{{cookiecutter.repo_name}}?label=version" alt="Version">
 
   <!-- Python -->
   <img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue" alt="Python">

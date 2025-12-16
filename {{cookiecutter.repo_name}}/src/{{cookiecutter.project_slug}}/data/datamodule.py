@@ -10,6 +10,7 @@ from {{cookiecutter.project_slug}}.data.datasets import RandomClassificationData
 from {{cookiecutter.project_slug}}.data.splits import random_split_indices
 from {{cookiecutter.project_slug}}.data.transforms import Identity
 
+
 @dataclass(frozen=True)
 class DataModuleConfig:
     batch_size: int = 64
@@ -20,8 +21,14 @@ class DataModuleConfig:
     val_frac: float = 0.1
     test_frac: float = 0.1
 
+
 class RandomDataModule(pl.LightningDataModule):
-    def __init__(self, ds_cfg: RandomDatasetConfig, dm_cfg: DataModuleConfig, transform: Optional[Callable] = None):
+    def __init__(
+        self,
+        ds_cfg: RandomDatasetConfig,
+        dm_cfg: DataModuleConfig,
+        transform: Optional[Callable] = None,
+    ):
         super().__init__()
         self.ds_cfg = ds_cfg
         self.dm_cfg = dm_cfg
@@ -30,7 +37,9 @@ class RandomDataModule(pl.LightningDataModule):
         self._split = None
 
     def setup(self, stage: Optional[str] = None) -> None:
-        self._dataset = RandomClassificationDataset(self.ds_cfg, transform=self.transform, seed=self.dm_cfg.seed)
+        self._dataset = RandomClassificationDataset(
+            self.ds_cfg, transform=self.transform, seed=self.dm_cfg.seed
+        )
         self._split = random_split_indices(
             n=len(self._dataset),
             seed=self.dm_cfg.seed,

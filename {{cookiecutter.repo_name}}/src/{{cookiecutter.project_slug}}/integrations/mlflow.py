@@ -5,12 +5,14 @@ from contextlib import contextmanager
 from typing import Optional
 
 import mlflow
-from omegaconf import DictConfig, OmegaConf
 from loguru import logger
+from omegaconf import DictConfig, OmegaConf
+
 
 def _tracking_uri(cfg: DictConfig) -> Optional[str]:
     # Prefer env var (opsec); fall back to cfg.mlflow.tracking_uri if explicitly set.
     return os.getenv("MLFLOW_TRACKING_URI") or cfg.mlflow.get("tracking_uri")
+
 
 @contextmanager
 def maybe_init_mlflow(cfg: DictConfig):
@@ -32,6 +34,7 @@ def maybe_init_mlflow(cfg: DictConfig):
     with mlflow.start_run(run_name=run_name):
         yield
 
+
 def set_standard_tags(cfg: DictConfig) -> None:
     tags = dict(cfg.mlflow.get("tags", {}))
     tags.setdefault("project", str(cfg.project.name))
@@ -40,6 +43,7 @@ def set_standard_tags(cfg: DictConfig) -> None:
     tags.setdefault("data_name", str(cfg.data.name))
     tags.setdefault("debug", str(bool(cfg.get("debug", False))))
     mlflow.set_tags(tags)
+
 
 def log_resolved_config(cfg: DictConfig, artifact_path: str = "config") -> None:
     if not bool(cfg.mlflow.get("log_config_as_artifact", True)):

@@ -11,9 +11,6 @@ permissions:
 jobs:
   release-check:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - name: Checkout repository
@@ -22,12 +19,12 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.13"
           enable-cache: true
 
       - name: Sync dependencies (runtime + dev)
         run: |
-          uv sync
+          uv sync --group dev
 
       - name: Run tests
         run: |

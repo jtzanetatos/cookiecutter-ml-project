@@ -32,9 +32,13 @@ jobs:
         run: |
           # Installs [project].dependencies + [dependency-groups].dev
           # mypy must be in the `dev` group in pyproject.toml
-          uv sync
+          uv sync --group dev
 
       - name: Run mypy
         run: |
-          # Adjust paths to match your layout
-          uv run mypy src tests
+          targets="src"
+          if find tests -type f \( -name "*.py" -o -name "*.pyi" \) | grep -q .; then
+            targets="$targets tests"
+          fi
+          echo "mypy targets: $targets"
+          uv run mypy $targets

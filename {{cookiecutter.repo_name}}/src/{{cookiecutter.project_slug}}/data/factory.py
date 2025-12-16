@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from omegaconf import DictConfig
 
-from {{cookiecutter.project_slug}}.data.datasets import RandomDatasetConfig
 from {{cookiecutter.project_slug}}.data.datamodule import DataModuleConfig, RandomDataModule
+from {{cookiecutter.project_slug}}.data.datasets import RandomDatasetConfig
 from {{cookiecutter.project_slug}}.data.transforms import Identity
+
 
 def build_datamodule(cfg: DictConfig) -> RandomDataModule:
     ds_cfg = RandomDatasetConfig(

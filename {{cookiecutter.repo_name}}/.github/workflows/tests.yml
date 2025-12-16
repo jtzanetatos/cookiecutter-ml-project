@@ -15,6 +15,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
 
@@ -28,15 +29,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
-      - name: Sync dependencies (runtime + dev)
+      # Install only what CI needs: base deps + dev tools
+      - name: Sync dependencies (base + dev)
         run: |
-          uv sync
+          uv sync --group dev
 
-      - name: Run pytest with coverage (no GPU / slow tests)
+      - name: Run pytest (no GPU / slow)
         run: |
-          # Assumes pytest.ini / [tool.pytest.ini_options] defines markers:
-          #   gpu: tests that require a GPU
-          #   slow: slow-running tests
           uv run pytest \
             -m "not gpu and not slow" \
             --cov=src \

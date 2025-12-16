@@ -14,9 +14,6 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - name: Checkout repository
@@ -25,8 +22,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
-          # Use a single Python version; template requires >=3.12
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.13"
           # Optional but recommended for speed:
           enable-cache: true
 
@@ -34,7 +30,7 @@ jobs:
         run: |
           # Installs [project].dependencies + [dependency-groups].dev
           # No extras (gpu, notebooks, etc.) are installed by default.
-          uv sync
+          uv sync --group dev
 
       - name: Ruff (lint + format check)
         run: |

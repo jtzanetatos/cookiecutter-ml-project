@@ -21,41 +21,50 @@ permissions:
 
 jobs:
   docs-build:
-    # Only run if there is MkDocs or Sphinx config present
-    if: >
-      hashFiles('mkdocs.yml', 'mkdocs.yaml', 'docs/conf.py') != ''
-
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          python-version: ${{ matrix.python-version }}
-          enable-cache: true
-
-      - name: Sync dependencies (runtime + dev)
-        run: |
-          # Assumes mkdocs / sphinx are in your dev group when you actually use them
-          uv sync
-
-      - name: Build docs / project
+      - name: Detect docs builder
+        id: detect
+        shell: bash
         run: |
           if [ -f "mkdocs.yml" ] || [ -f "mkdocs.yaml" ]; then
-            echo "Detected MkDocs config, building docs..."
-            uv run mkdocs build --strict
+            echo "builder=mkdocs" >> "$GITHUB_OUTPUT"
           elif [ -f "docs/conf.py" ]; then
-            echo "Detected Sphinx config, building docs..."
-            uv run sphinx-build -b html docs docs/_build -W
+            echo "builder=sphinx" >> "$GITHUB_OUTPUT"
           else
-            echo "No docs configuration found; nothing to do."
+            echo "builder=none" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Install uv (Python 3.13)
+        if: steps.detect.outputs.builder != 'none'
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Sync dependencies (locked)
+        if: steps.detect.outputs.builder != 'none'
+        run: |
+          if [ "${{ steps.detect.outputs.builder }}" = "mkdocs" ]; then
+            uv sync --group dev --group docs-mkdocs
+          elif [ "${{ steps.detect.outputs.builder }}" = "sphinx" ]; then
+            uv sync --group dev --group docs-sphinx
+          fi
+
+      - name: Build documentation
+        if: steps.detect.outputs.builder != 'none'
+        run: |
+          if [ "${{ steps.detect.outputs.builder }}" = "mkdocs" ]; then
+            uv run mkdocs build --strict
+          elif [ "${{ steps.detect.outputs.builder }}" = "sphinx" ]; then
+            uv run sphinx-build -b html docs docs/_build -W
+          fi
+
       - name: Package build check
+        if: steps.detect.outputs.builder != 'none'
         run: |
           uv build

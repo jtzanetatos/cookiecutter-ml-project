@@ -24,7 +24,9 @@ st.caption("Template skeleton: replace with project-specific content.")
 
 with st.sidebar:
     st.header("Model")
-    model_name = st.text_input("MLflow model name", os.getenv("MLFLOW_MODEL_NAME", "CHANGE_ME"))
+    model_name = st.text_input(
+        "MLflow model name", os.getenv("MLFLOW_MODEL_NAME", "CHANGE_ME")
+    )
     model_alias = st.text_input("Alias", os.getenv("MLFLOW_MODEL_ALIAS", "prod"))
 
 st.write("Model:", model_name, "@", model_alias)
@@ -33,4 +35,6 @@ st.subheader("Inputs")
 raw = st.text_area("Enter JSON or CSV-like inputs (project-specific)")
 st.button("Run inference", disabled=True)
 
-st.info("Implement: load model via MLflow, validate inputs with Pydantic, call predictor, render outputs/plots.")
+st.info(
+    "Implement: load model via MLflow, validate inputs with Pydantic, call predictor, render outputs/plots."
+)

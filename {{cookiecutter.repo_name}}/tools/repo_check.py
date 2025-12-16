@@ -25,7 +25,6 @@ import argparse
 from pathlib import Path
 from typing import Iterable, List, Tuple
 
-
 REPO_ROOT = Path.cwd()
 
 
@@ -45,7 +44,10 @@ def check_any_exists(group_name: str, candidates: Iterable[Path]) -> Tuple[bool,
     for p in candidates:
         if exists(p):
             return True, str(p)
-    return False, f"{group_name}: none of {', '.join(str(c) for c in candidates)} exists"
+    return (
+        False,
+        f"{group_name}: none of {', '.join(str(c) for c in candidates)} exists",
+    )
 
 
 def warn(msg: str, warnings: List[str]) -> None:
@@ -53,7 +55,9 @@ def warn(msg: str, warnings: List[str]) -> None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Validate repository structure against the ML template.")
+    ap = argparse.ArgumentParser(
+        description="Validate repository structure against the ML template."
+    )
     ap.add_argument("--root", default=str(REPO_ROOT), help="Repo root (default: cwd)")
     ap.add_argument("--strict", action="store_true", help="Treat warnings as errors.")
     args = ap.parse_args()
@@ -105,8 +109,20 @@ def main() -> int:
 
     # Optional but recommended deployment files
     optional_deploy_groups = [
-        ("Dockerfile", [root / "deployment" / "docker" / "Dockerfile", root / "deployment" / "Dockerfile"]),
-        ("docker-compose", [root / "deployment" / "docker" / "docker-compose.yml", root / "docker-compose.yml"]),
+        (
+            "Dockerfile",
+            [
+                root / "deployment" / "docker" / "Dockerfile",
+                root / "deployment" / "Dockerfile",
+            ],
+        ),
+        (
+            "docker-compose",
+            [
+                root / "deployment" / "docker" / "docker-compose.yml",
+                root / "docker-compose.yml",
+            ],
+        ),
     ]
     for name, candidates in optional_deploy_groups:
         ok, msg = check_any_exists(name, candidates)
@@ -134,7 +150,10 @@ def main() -> int:
     gh = root / ".github"
     if gh.exists():
         if not (gh / "PULL_REQUEST_TEMPLATE.md").exists():
-            warn("WARN: .github/PULL_REQUEST_TEMPLATE.md missing (recommended).", warnings)
+            warn(
+                "WARN: .github/PULL_REQUEST_TEMPLATE.md missing (recommended).",
+                warnings,
+            )
         issue_dir = gh / "ISSUE_TEMPLATE"
         if not issue_dir.exists():
             warn("WARN: .github/ISSUE_TEMPLATE/ missing (recommended).", warnings)
@@ -142,13 +161,22 @@ def main() -> int:
             # config.yml is optional; templates are recommended
             for f in ["bug_report.yml", "feature_request.yml", "task.yml"]:
                 if not (issue_dir / f).exists():
-                    warn(f"WARN: .github/ISSUE_TEMPLATE/{f} missing (recommended).", warnings)
+                    warn(
+                        f"WARN: .github/ISSUE_TEMPLATE/{f} missing (recommended).",
+                        warnings,
+                    )
     else:
         warn("WARN: .github/ directory missing (recommended).", warnings)
 
     # --- woodpecker (optional but expected if using it) ---
-    if not (root / ".woodpecker.yml").exists() and not (root / ".woodpecker" / "cli.yml").exists():
-        warn("WARN: no Woodpecker pipeline found (.woodpecker.yml or .woodpecker/cli.yml).", warnings)
+    if (
+        not (root / ".woodpecker.yml").exists()
+        and not (root / ".woodpecker" / "cli.yml").exists()
+    ):
+        warn(
+            "WARN: no Woodpecker pipeline found (.woodpecker.yml or .woodpecker/cli.yml).",
+            warnings,
+        )
 
     # --- report ---
     if missing_required:

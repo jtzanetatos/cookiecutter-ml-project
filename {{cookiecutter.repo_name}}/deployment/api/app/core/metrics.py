@@ -26,7 +26,9 @@ def install_metrics(app: FastAPI) -> None:
         path = request.url.path
         with REQUEST_LATENCY.labels(method=method, path=path).time():
             response = await call_next(request)
-        REQUEST_COUNT.labels(method=method, path=path, status=str(response.status_code)).inc()
+        REQUEST_COUNT.labels(
+            method=method, path=path, status=str(response.status_code)
+        ).inc()
         return response
 
     @app.get("/metrics", include_in_schema=False)

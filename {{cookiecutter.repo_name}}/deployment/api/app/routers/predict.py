@@ -18,4 +18,6 @@ async def predict(payload: PredictRequest, request: Request) -> PredictResponse:
         logger.exception("Prediction failed.")
         raise HTTPException(status_code=500, detail="Prediction failed") from e
 
-    return PredictResponse(outputs=outputs, model_uri=svc.model_uri, request_id=request_id_var.get())
+    return PredictResponse(
+        outputs=outputs, model_uri=svc.model_uri, request_id=request_id_var.get()
+    )

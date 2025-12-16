@@ -153,7 +153,9 @@ def parse_simple_yaml_kv(path: Path) -> Dict[str, str]:
             stack.append((indent, key))
             continue
         # strip quotes
-        if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+        if (val.startswith('"') and val.endswith('"')) or (
+            val.startswith("'") and val.endswith("'")
+        ):
             val = val[1:-1]
         full_key = ".".join([k for _, k in stack] + [key])
         out[full_key] = val
@@ -161,12 +163,29 @@ def parse_simple_yaml_kv(path: Path) -> Dict[str, str]:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Validate data/ directory structure and hygiene.")
-    ap.add_argument("--root", default=None, help="Repo root (default: auto-detect from cwd)")
-    ap.add_argument("--threshold-mb", type=int, default=50, help="Large file threshold in MB (default: 50)")
+    ap = argparse.ArgumentParser(
+        description="Validate data/ directory structure and hygiene."
+    )
+    ap.add_argument(
+        "--root", default=None, help="Repo root (default: auto-detect from cwd)"
+    )
+    ap.add_argument(
+        "--threshold-mb",
+        type=int,
+        default=50,
+        help="Large file threshold in MB (default: 50)",
+    )
     ap.add_argument("--strict", action="store_true", help="Treat warnings as errors.")
-    ap.add_argument("--warn-only", action="store_true", help="Do not fail on large files; warn instead.")
-    ap.add_argument("--check-config", action="store_true", help="Cross-check config/data/base.yaml paths exist.")
+    ap.add_argument(
+        "--warn-only",
+        action="store_true",
+        help="Do not fail on large files; warn instead.",
+    )
+    ap.add_argument(
+        "--check-config",
+        action="store_true",
+        help="Cross-check config/data/base.yaml paths exist.",
+    )
     args = ap.parse_args()
 
     root = Path(args.root).resolve() if args.root else find_repo_root(Path.cwd())
@@ -187,10 +206,14 @@ def main() -> int:
     # 2) DVC hygiene
     if appears_to_use_dvc(root):
         if not (root / ".dvc").exists():
-            errors.append("DVC appears to be used (dvc.yaml or .dvc present) but .dvc/ directory is missing.")
+            errors.append(
+                "DVC appears to be used (dvc.yaml or .dvc present) but .dvc/ directory is missing."
+            )
         gi = root / ".gitignore"
         if not gitignore_ignores_data(gi):
-            warnings.append(".gitignore does not appear to ignore data/ (recommended when using DVC).")
+            warnings.append(
+                ".gitignore does not appear to ignore data/ (recommended when using DVC)."
+            )
 
     # 3) Large file guard
     threshold_bytes = int(args.threshold_mb) * 1024 * 1024
@@ -235,7 +258,9 @@ def main() -> int:
                     p = Path(raw_val)
                     resolved = (root / p) if not p.is_absolute() else p
                     if not resolved.exists():
-                        errors.append(f"Config path missing: {k}={raw_val} (resolved: {resolved})")
+                        errors.append(
+                            f"Config path missing: {k}={raw_val} (resolved: {resolved})"
+                        )
             if not checked_any:
                 warnings.append(
                     "Config cross-check enabled but no known data path keys were found in config/data/base.yaml. "

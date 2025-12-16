@@ -1,0 +1,16 @@
+name: "Task"
+description: "Track non-bug, non-feature work."
+title: "[Task]: "
+labels: ["chore"]
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details

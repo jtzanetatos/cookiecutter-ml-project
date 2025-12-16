@@ -1,0 +1,50 @@
+# .pre-commit-config.yaml (cookiecutter repo)
+#
+# Goal:
+# - Keep the cookiecutter repo clean and consistent.
+# - Avoid false-positives from Helm templates and GitHub Actions expressions
+#   inside the generated template directory.
+#
+# Note:
+# - This runs in the cookiecutter repo (template generator), not inside generated projects.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]  # guard against accidentally committing big artifacts
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-json
+
+      # YAML validation is useful, but will choke on Helm templates and on some GitHub Actions
+      # expressions. We exclude the problematic template paths explicitly.
+      - id: check-yaml
+        exclude: |
+          (?x)^(
+            {{cookiecutter\.repo_name}}/deployment/k8s/helm/.*|
+            {{cookiecutter\.repo_name}}/\.github/workflows/.*|
+            {{cookiecutter\.repo_name}}/deployment/k8s/.*\.yaml
+          )$
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.6
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        args: ["--ignore-words-list=crate,nd"]
+        exclude: |
+          (?x)^(
+            {{cookiecutter\.repo_name}}/deployment/k8s/helm/.*|
+            {{cookiecutter\.repo_name}}/deployment/k8s/.*\.yaml
+          )$

@@ -3,8 +3,11 @@ from __future__ import annotations
 import torch
 from torch import nn
 
+
 class MLPClassifier(nn.Module):
-    def __init__(self, n_features: int, n_classes: int, hidden: int = 128, dropout: float = 0.0):
+    def __init__(
+        self, n_features: int, n_classes: int, hidden: int = 128, dropout: float = 0.0
+    ):
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(n_features, hidden),

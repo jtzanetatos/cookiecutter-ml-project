@@ -26,8 +26,7 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-from tomlkit import parse, dumps  # dev dependency
-
+from tomlkit import dumps, parse  # dev dependency
 
 PYPROJECT = Path("pyproject.toml")
 
@@ -58,7 +57,9 @@ class Version:
         return f"{self.major}.{self.minor}.{self.patch}"
 
 
-def run(cmd: list[str], *, capture: bool = False, check: bool = True) -> subprocess.CompletedProcess:
+def run(
+    cmd: list[str], *, capture: bool = False, check: bool = True
+) -> subprocess.CompletedProcess:
     return subprocess.run(
         cmd,
         text=True,
@@ -86,14 +87,18 @@ def current_branch() -> str:
 def ensure_branch(expected: str) -> None:
     br = current_branch()
     if br != expected:
-        raise SystemExit(f"Refusing to release from branch '{br}'. Expected '{expected}'.")
+        raise SystemExit(
+            f"Refusing to release from branch '{br}'. Expected '{expected}'."
+        )
 
 
 def ensure_clean_working_tree() -> None:
     # porcelain is stable for parsing
     res = git("status", "--porcelain", capture=True)
     if res.stdout.strip():
-        raise SystemExit("Working tree is not clean. Commit/stash changes before releasing.")
+        raise SystemExit(
+            "Working tree is not clean. Commit/stash changes before releasing."
+        )
 
 
 def read_version_from_pyproject(path: Path = PYPROJECT) -> Version:
@@ -103,7 +108,9 @@ def read_version_from_pyproject(path: Path = PYPROJECT) -> Version:
     try:
         v = doc["project"]["version"]
     except Exception as e:
-        raise SystemExit("pyproject.toml missing [project].version (source of truth).") from e
+        raise SystemExit(
+            "pyproject.toml missing [project].version (source of truth)."
+        ) from e
     return Version.parse(str(v))
 
 
@@ -134,7 +141,9 @@ def run_checks(*, skip: bool) -> None:
         run(["ruff", "check", "."])
         run(["ruff", "format", "--check", "."])
     except FileNotFoundError:
-        raise SystemExit("ruff is not available in this environment. Install dev deps or use --skip-checks.")
+        raise SystemExit(
+            "ruff is not available in this environment. Install dev deps or use --skip-checks."
+        )
 
     # pytest: treat "no tests collected" (exit 5) as success for templates
     try:
@@ -144,19 +153,44 @@ def run_checks(*, skip: bool) -> None:
         elif p.returncode != 0:
             raise SystemExit(f"pytest failed with exit code {p.returncode}")
     except FileNotFoundError:
-        raise SystemExit("pytest is not available in this environment. Install dev deps or use --skip-checks.")
+        raise SystemExit(
+            "pytest is not available in this environment. Install dev deps or use --skip-checks."
+        )
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Safe release helper (bump version, tag, push).")
-    ap.add_argument("--part", choices=["major", "minor", "patch"], default="patch", help="Which part to bump.")
-    ap.add_argument("--set-version", default=None, help="Set an explicit version X.Y.Z instead of bumping.")
-    ap.add_argument("--branch", default="main", help="Branch required for release (default: main).")
-    ap.add_argument("--tag-prefix", default="v", help="Tag prefix (default: v -> vX.Y.Z).")
-    ap.add_argument("--skip-checks", action="store_true", help="Skip ruff/pytest checks.")
-    ap.add_argument("--dry-run", action="store_true", help="Print actions without making changes.")
-    ap.add_argument("--no-push", action="store_true", help="Do not push commit/tag (local-only).")
-    ap.add_argument("--message", default="Release {version}", help="Commit/tag message template.")
+    ap = argparse.ArgumentParser(
+        description="Safe release helper (bump version, tag, push)."
+    )
+    ap.add_argument(
+        "--part",
+        choices=["major", "minor", "patch"],
+        default="patch",
+        help="Which part to bump.",
+    )
+    ap.add_argument(
+        "--set-version",
+        default=None,
+        help="Set an explicit version X.Y.Z instead of bumping.",
+    )
+    ap.add_argument(
+        "--branch", default="main", help="Branch required for release (default: main)."
+    )
+    ap.add_argument(
+        "--tag-prefix", default="v", help="Tag prefix (default: v -> vX.Y.Z)."
+    )
+    ap.add_argument(
+        "--skip-checks", action="store_true", help="Skip ruff/pytest checks."
+    )
+    ap.add_argument(
+        "--dry-run", action="store_true", help="Print actions without making changes."
+    )
+    ap.add_argument(
+        "--no-push", action="store_true", help="Do not push commit/tag (local-only)."
+    )
+    ap.add_argument(
+        "--message", default="Release {version}", help="Commit/tag message template."
+    )
     args = ap.parse_args()
 
     ensure_git_repo()
@@ -179,7 +213,9 @@ def main() -> int:
     run_checks(skip=args.skip_checks)
 
     if args.dry_run:
-        print("Dry-run enabled: no files will be modified, no git actions will be executed.")
+        print(
+            "Dry-run enabled: no files will be modified, no git actions will be executed."
+        )
         return 0
 
     # Bump version

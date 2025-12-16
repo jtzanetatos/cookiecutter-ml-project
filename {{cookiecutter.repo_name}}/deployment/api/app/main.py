@@ -4,7 +4,7 @@ import os
 from contextlib import asynccontextmanager
 from typing import Any
 
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
 from loguru import logger
@@ -43,7 +43,9 @@ async def lifespan(app: FastAPI):
             logger.info("Model loaded and ready.")
         except Exception:
             # Keep process alive but mark readiness as false.
-            logger.exception("Failed to load model on startup; readiness will be false.")
+            logger.exception(
+                "Failed to load model on startup; readiness will be false."
+            )
 
     yield
 
@@ -66,6 +68,7 @@ async def request_context_middleware(request: Request, call_next):
     rid = request.headers.get("x-request-id") or request.headers.get("x-requestid")
     if not rid:
         import uuid
+
         rid = str(uuid.uuid4())
 
     token = request_id_var.set(rid)

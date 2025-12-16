@@ -1,0 +1,71 @@
+# --------------------------------------------------
+# Python / tooling
+# --------------------------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# uv
+.uv/
+.uv-cache/
+uv.lock
+
+# Ruff / mypy / pytest
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# --------------------------------------------------
+# Cookiecutter
+# --------------------------------------------------
+.cookiecutter_replay/
+
+# Generated projects (if you use a local output dir)
+_generated/
+tmp/
+tmp-cookiecutter/
+
+# --------------------------------------------------
+# Editors / OS
+# --------------------------------------------------
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --------------------------------------------------
+# Jupyter
+# --------------------------------------------------
+.ipynb_checkpoints/
+
+# --------------------------------------------------
+# Build artifacts (template mistakes)
+# --------------------------------------------------
+build/
+dist/
+
+# --------------------------------------------------
+# Safety: never commit rendered template output
+# --------------------------------------------------
+test-*/
+test_*/
+example-*/
+example_*/
+
+# --------------------------------------------------
+# Logs
+# --------------------------------------------------
+*.log

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import torch
 from torch import nn
 
+
 @dataclass
 class Predictor:
     model: nn.Module

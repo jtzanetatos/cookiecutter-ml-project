@@ -20,8 +20,8 @@ dependencies = [
 gpu = [
     # CUDA / GPU-specific deps. NEVER installed in CI.
     # Adapt versions / wheels to your stack as needed.
-    "torch==2.5.1+cu130",
-    "torchvision==0.20.1+cu130",
+    "torch==2.9.1+cu130",
+    "torchvision==0.24.1+cu130",
     "xformers>=0.0.28",
 ]
 notebooks = [
@@ -62,7 +62,7 @@ dev = [
     "codespell>=2.3",
 
     # security / deps
-    "pip-audit>=2.7",
+    "pip-audit>=2.5.5",
 
     # notebooks
     "nbstripout>=0.8",
@@ -70,6 +70,26 @@ dev = [
 
     # dev
     "cookiecutter>=2.6",
+    "dvc>=3.0",
+]
+
+docs-mkdocs = [
+  "mkdocs>=1.6",
+  # pick ONE theme if you use it
+  "mkdocs-material>=9.5",
+  # optional, only if you use them:
+  # "mkdocstrings[python]>=0.25",
+  # "mkdocs-gen-files>=0.5",
+  # "mkdocs-literate-nav>=0.6",
+  # "mkdocs-awesome-pages-plugin>=2.9",
+]
+
+docs-sphinx = [
+  "sphinx>=7.0",
+  # pick ONE theme if you use it
+  "sphinx-rtd-theme>=2.0",
+  # optional, only if you use it:
+  # "myst-parser>=3.0",
 ]
 
 [build-system]
@@ -79,6 +99,7 @@ build-backend = "setuptools.build_meta"
 [[tool.uv.index]]
 name = "pytorch-cu130"
 url = "https://download.pytorch.org/whl/cu130"
+explicit = true
 
 [tool.uv.sources]
 torch = { index = "pytorch-cu130" }
@@ -120,7 +141,7 @@ markers = [
 
 # Optional: mypy defaults
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.13"
 strict = true
 mypy_path = ["src"]
 ignore_missing_imports = true

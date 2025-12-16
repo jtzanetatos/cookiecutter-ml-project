@@ -10,19 +10,19 @@ from pathlib import Path
 
 import hydra
 from hydra.core.hydra_config import HydraConfig
-from omegaconf import DictConfig
 from loguru import logger
+from omegaconf import DictConfig
 
+from {{cookiecutter.project_slug}}.data.factory import build_datamodule
+from {{cookiecutter.project_slug}}.evaluation.evaluate import maybe_run_offline_eval
 from {{cookiecutter.project_slug}}.integrations.mlflow import (
-    maybe_init_mlflow,
     log_resolved_config,
+    maybe_init_mlflow,
     set_standard_tags,
 )
-from {{cookiecutter.project_slug}}.utils.seed import seed_everything
-from {{cookiecutter.project_slug}}.data.factory import build_datamodule
 from {{cookiecutter.project_slug}}.models.factory import build_lightning_module
 from {{cookiecutter.project_slug}}.training.loops import fit
-from {{cookiecutter.project_slug}}.evaluation.evaluate import maybe_run_offline_eval
+from {{cookiecutter.project_slug}}.utils.seed import seed_everything
 
 
 @hydra.main(

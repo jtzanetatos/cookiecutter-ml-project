@@ -12,6 +12,7 @@ request_id_var: ContextVar[str] = ContextVar("request_id", default="-")
 
 class InterceptHandler(logging.Handler):
     """Redirect stdlib logging (uvicorn, fastapi, etc.) into loguru."""
+
     def emit(self, record: logging.LogRecord) -> None:
         try:
             level = logger.level(record.levelname).name
