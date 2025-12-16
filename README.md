@@ -206,3 +206,11 @@ This cookiecutter template can be versioned and tagged independently. Tag releas
 ## License
 
 This cookiecutter template is licensed under GPL-3.0 unless stated otherwise.
+
+>License note
+>This repository is licensed under GPLv3.
+>
+>Projects generated using this template are not required to be licensed under GPLv3.
+>Users are free to choose any license for their generated projects.
+>
+>The GPLv3 license applies to the template itself and any modifications or redistributions of the template.
