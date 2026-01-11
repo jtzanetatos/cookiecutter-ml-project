@@ -34,7 +34,8 @@ jobs:
             repo_name=test-ml \
             project_slug=test_ml_project \
             owner=acme \
-            project_title="Test ML Project"
+            project_title="Test ML Project" \
+            hydra_args=""
 
           test -d "$out_dir/test-ml"
           echo "OUT_DIR=$out_dir" >> "$GITHUB_ENV"
