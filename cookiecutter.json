@@ -6,6 +6,7 @@
   "github_owner": "jtzanetatos",
   "license": "GPL-3.0",
   "python_version": "3.12",
+  "hydra_args": "",
   "_copy_without_render": [
     ".github/**",
     "deployment/k8s/helm/**",
