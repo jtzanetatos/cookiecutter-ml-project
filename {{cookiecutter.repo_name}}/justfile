@@ -71,7 +71,7 @@ test:
 # Run training. Usage: just train experiment=baseline model.lr=0.01
 # The '+' allows passing arbitrary arguments to hydra
 train +hydra_args:
-    python src/train.py {{hydra_args}}
+    python src/train.py {{ cookiecutter.get('hydra_args', '') }}
 
 # Run a hyperparameter sweep (Optuna)
 sweep:
