@@ -70,9 +70,9 @@ Rules:
 
 - Dashboards must remain **thin UIs**
 - Reusable logic belongs in `src/`:
-  - `src/<{{cookiecutter.project_slug}}>/inference/`
-  - `src/<{{cookiecutter.project_slug}}>/schemas/`
-  - `src/<{{cookiecutter.project_slug}}>/integrations/`
+  - `src/{{cookiecutter.project_slug}}/inference/`
+  - `src/{{cookiecutter.project_slug}}/schemas/`
+  - `src/{{cookiecutter.project_slug}}/integrations/`
 
 Relevant dir:
 

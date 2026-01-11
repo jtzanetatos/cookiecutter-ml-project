@@ -87,7 +87,7 @@ steps:
       MODEL_ALIAS: prod
 
       # Optional: enable Triton max_batch_size only when >1
-      # (None/1 => no batching per your rule)
+      # (None/1 => no batching)
       TRITON_BATCH: "1"
 
       # Optional: override Triton model directory name (defaults to MODEL_NAME)

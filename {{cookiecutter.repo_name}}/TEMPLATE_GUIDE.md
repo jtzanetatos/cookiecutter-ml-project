@@ -49,7 +49,7 @@ This template is built around the following principles:
 ├── docs/                   # ADRs, design docs, figures
 ├── notebooks/              # EDA & experimentation only
 ├── src/
-│   └── <{{cookiecutter.project_slug}}>/     # Production Python package
+│   └── {{cookiecutter.project_slug}}/     # Production Python package
 │       ├── cli/            # Training entrypoints (Hydra)
 │       ├── data/           # Datasets, datamodules, transforms
 │       ├── models/         # PyTorch & Lightning models
@@ -88,7 +88,7 @@ This template is built around the following principles:
 Training is always launched via:
 
 ```bash
-python -m <{{cookiecutter.project_slug}}>.cli.train
+python -m {{cookiecutter.project_slug}}.cli.train
 ```
 
 Overrides happen via Hydra CLI or experiment configs.

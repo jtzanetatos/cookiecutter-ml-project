@@ -81,9 +81,6 @@ def gitignore_ignores_data(gitignore: Path) -> bool:
         r"^/data/\*\*$",
         r"^data/\*\*/\*$",
         r"^/data/\*\*/\*$",
-        r"^data/\*$",
-        r"^data/\*\*$",
-        r"^data/\*\*/\*$",
         r"^data/\*\*/\*\*$",
     ]
     for line in txt.splitlines():

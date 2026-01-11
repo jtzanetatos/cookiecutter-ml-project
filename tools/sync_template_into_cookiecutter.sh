@@ -75,6 +75,16 @@ list_files_with_pattern() {
 
 echo "==> Applying cookiecutter placeholders in files"
 
+# 1. Handle <project_slug> -> placeholder (to avoid collision with bare project_slug)
+files="$(list_files_with_pattern '<project_slug>')"
+if [[ -n "${files}" ]]; then
+  while IFS= read -r f; do
+    [[ -z "${f}" ]] && continue
+    perl -pi -e 's/<project_slug>/__COOKIE_PS_BRACKET__/g' "${TEMPLATE_DIR}/${f}"
+  done <<< "${files}"
+fi
+
+# 2. Handle bare project_slug -> {{cookiecutter.project_slug}}
 files="$(list_files_with_pattern '\bproject_slug\b')"
 if [[ -n "${files}" ]]; then
   while IFS= read -r f; do
@@ -83,11 +93,12 @@ if [[ -n "${files}" ]]; then
   done <<< "${files}"
 fi
 
-files="$(list_files_with_pattern '<project_slug>')"
+# 3. Restore placeholder -> {{cookiecutter.project_slug}}
+files="$(list_files_with_pattern '__COOKIE_PS_BRACKET__')"
 if [[ -n "${files}" ]]; then
   while IFS= read -r f; do
     [[ -z "${f}" ]] && continue
-    perl -pi -e 's/<project_slug>/{{cookiecutter.project_slug}}/g' "${TEMPLATE_DIR}/${f}"
+    perl -pi -e 's/__COOKIE_PS_BRACKET__/{{cookiecutter.project_slug}}/g' "${TEMPLATE_DIR}/${f}"
   done <<< "${files}"
 fi
 
