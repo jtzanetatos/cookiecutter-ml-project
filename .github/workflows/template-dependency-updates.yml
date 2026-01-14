@@ -1,0 +1,36 @@
+name: Update Template Dependencies
+
+on:
+    schedule:
+        # Run at 05:00 every Monday
+        - cron: "0 5 * * 1"
+    workflow_dispatch:
+
+permissions:
+    contents: write
+    pull-requests: write
+
+jobs:
+    update-deps:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+
+            - name: Run update script
+              run: python tools/update_dependencies.py
+
+            - name: Create Pull Request
+              uses: peter-evans/create-pull-request@v6
+              with:
+                  token: { { "${{ secrets.GITHUB_TOKEN }}" } }
+                  commit-message: "chore: update template python dependencies"
+                  title: "chore: update template python dependencies"
+                  body: "Automated updates for pinned dependencies in `pyproject.toml`."
+                  branch: "chore/update-dependencies"
+                  delete-branch: true

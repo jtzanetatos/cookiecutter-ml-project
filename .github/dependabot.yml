@@ -1,17 +1,21 @@
 version: 2
-
 updates:
+  # Maintain dependencies for GitHub Actions in the root
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-
-    # Group all GitHub Actions updates into ONE PR
+      interval: "daily"
     groups:
       github-actions:
         patterns:
           - "*"
 
-    # Optional quality-of-life settings
-    open-pull-requests-limit: 1
-    rebase-strategy: "auto"
+  # Maintain dependencies for GitHub Actions in the template
+  - package-ecosystem: "github-actions"
+    directory: "/{{cookiecutter.repo_name}}/.github/workflows"
+    schedule:
+      interval: "daily"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
