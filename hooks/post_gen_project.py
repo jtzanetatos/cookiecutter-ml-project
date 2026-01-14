@@ -1,0 +1,52 @@
+import subprocess
+import shutil
+import os
+
+
+def configure_dvc():
+    """Configures DVC remote if S3 is selected."""
+    dataset_storage = "{{ cookiecutter.dataset_storage }}"
+    if dataset_storage == "s3":
+        bucket = "{{ cookiecutter.s3_bucket_name }}"
+        endpoint = "{{ cookiecutter.s3_endpoint_url }}"
+        profile = "{{ cookiecutter.aws_profile }}"
+        
+        print(f"Configuring DVC for S3 bucket: {bucket}")
+        
+        # Add remote
+        try:
+            # Initialize DVC if not already initialized
+            if not os.path.exists(".dvc"):
+                 subprocess.run(["dvc", "init", "--no-scm"], check=True)
+
+            subprocess.run(["dvc", "remote", "add", "-d", "storage", f"s3://{bucket}"], check=True)
+            
+            # Set endpoint if provided (for self-hosted/minio)
+            if endpoint:
+                subprocess.run(["dvc", "remote", "modify", "storage", "endpointurl", endpoint], check=True)
+            
+            # Set profile if provided
+            if profile and profile != "default":
+                subprocess.run(["dvc", "remote", "modify", "storage", "profile", profile], check=True)
+                
+            print("DVC configured successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to configure DVC: {e}")
+        except FileNotFoundError:
+             print("dvc command not found. Skipping DVC configuration.")
+
+def run_pre_commit_update():
+    """Runs 'pre-commit autoupdate' if pre-commit is installed."""
+    if shutil.which("pre-commit"):
+        print("Running pre-commit autoupdate...")
+        try:
+            subprocess.run(["pre-commit", "autoupdate"], check=True)
+            print("pre-commit hooks updated successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to update pre-commit hooks: {e}")
+    else:
+        print("pre-commit not found. Skipping hook update.")
+
+if __name__ == "__main__":
+    configure_dvc()
+    run_pre_commit_update()
