@@ -9,7 +9,7 @@ steps:
   # CI: lint + tests for PRs into main
   # --------------------------------------
   - name: ci
-    image: python:3.12
+    image: python:{{ cookiecutter.python_version }}
     when:
       - event: pull_request
         branch: main
@@ -60,7 +60,7 @@ steps:
   # - manual    -> fallback/special cases
   # --------------------------------------
   - name: promote-model
-    image: python:3.12
+    image: python:{{ cookiecutter.python_version }}
     when:
       - event: tag
         branch: main
@@ -131,7 +131,7 @@ steps:
           BATCH_FLAG="--batch ${TRITON_BATCH}"
         fi
 
-        python deployment/scripts/promote_and_export_to_triton_updated.py promote-and-export \
+        python deployment/scripts/promote_and_export_to_triton.py promote-and-export \
           --model-name "$MODEL_NAME" \
           --version "$VERSION" \
           --alias "$MODEL_ALIAS" \

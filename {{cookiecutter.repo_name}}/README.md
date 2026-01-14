@@ -48,7 +48,7 @@ Keep this section short and concrete.
 - Single‑source configuration via **Hydra**
 - Experiment tracking & model registry with **MLflow** (alias‑based lifecycle)
 - Optional data versioning & pipelines with **DVC**
-- Modular, testable code under `src/<{{cookiecutter.project_slug}}>/`
+- Modular, testable code under `src/{{cookiecutter.project_slug}}/`
 - Notebook‑driven research → production promotion workflow
 - Deployment via **FastAPI**, **Docker**, **Kubernetes**
 - Optional **Triton Inference Server** export for high‑performance inference
@@ -66,7 +66,7 @@ Keep this section short and concrete.
 ├── docs/                   # Design docs, ADRs, figures
 ├── notebooks/              # Exploration & experiments
 ├── src/
-│   └── <{{cookiecutter.project_slug}}>/     # Production Python package
+│   └── {{cookiecutter.project_slug}}/     # Production Python package
 ├── tests/                  # Unit & integration tests
 ├── tools/                  # Repo hygiene & CI tooling
 ├── dvc.yaml                # Optional DVC pipeline stub
@@ -104,13 +104,13 @@ uv pip install -e ".[mlops]"
 All training runs go through the Hydra entrypoint:
 
 ```bash
-python -m <{{cookiecutter.project_slug}}>.cli.train
+python -m {{cookiecutter.project_slug}}.cli.train
 ```
 
 Example overrides:
 
 ```bash
-python -m <{{cookiecutter.project_slug}}>.cli.train model=baseline trainer.fast_dev_run=true
+python -m {{cookiecutter.project_slug}}.cli.train model=baseline trainer.fast_dev_run=true
 ```
 
 Experiments are tracked in **MLflow** automatically.
@@ -122,7 +122,7 @@ Experiments are tracked in **MLflow** automatically.
 Offline evaluation logic lives under:
 
 ```text
-src/<{{cookiecutter.project_slug}}>/evaluation/
+src/{{cookiecutter.project_slug}}/evaluation/
 ```
 
 Metrics and reports are logged via MLflow and/or written to `outputs/`.
@@ -134,7 +134,7 @@ Metrics and reports are logged via MLflow and/or written to `outputs/`.
 Reusable inference logic (no web code):
 
 ```text
-src/<{{cookiecutter.project_slug}}>/inference/
+src/{{cookiecutter.project_slug}}/inference/
 ```
 
 This is consumed by:
@@ -205,7 +205,7 @@ sh tools/setup_notebooks.sh
 
 If this repo was generated from the ML project template:
 
-- Replace `<{{cookiecutter.project_slug}}>` everywhere
+- Replace `{{cookiecutter.project_slug}}` everywhere
 - Fill in all directory‑level README files
 - Read **TEMPLATE_GUIDE.md** before modifying structure
 

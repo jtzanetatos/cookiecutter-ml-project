@@ -10,6 +10,14 @@ set shell := ["bash", "-uc"]
 set dotenv-load
 
 # -----------------------------------------------------------------------------
+# UV Commands
+# -----------------------------------------------------------------------------
+
+# Lock dependencies
+lock:
+    uv lock
+
+# -----------------------------------------------------------------------------
 # Recipes
 # -----------------------------------------------------------------------------
 
@@ -24,7 +32,11 @@ default:
 # Install dependencies, pull data, and setup hooks
 setup:
     @echo "Installing python dependencies..."
-    pip install -e ".[dev]"
+    @echo "Installing python dependencies..."
+    # uv sync creates the venv and installs deps
+    uv sync
+    # Install the project itself in editable mode (uv sync does this if configured, but ensuring explicit install if needed)
+    # uv pip install -e .
     @echo "Pulling data from DVC..."
     dvc pull
     @echo "Installing pre-commit hooks..."
@@ -33,7 +45,10 @@ setup:
 
 # Update dependencies from pyproject.toml
 update:
-    pip install --upgrade -e ".[dev]"
+# Update dependencies (re-lock and sync)
+update:
+    uv lock --upgrade
+    uv sync
 
 # Clean up cache, build artifacts, and pycache
 clean:
@@ -71,7 +86,7 @@ test:
 # Run training. Usage: just train experiment=baseline model.lr=0.01
 # The '+' allows passing arbitrary arguments to hydra
 train +hydra_args:
-    python src/train.py {{ cookiecutter.get('hydra_args', '') }}
+    python src/{{ cookiecutter.project_slug }}/cli/train.py {{ '{{' }} hydra_args {{ '}}' }}
 
 # Run a hyperparameter sweep (Optuna)
 sweep:

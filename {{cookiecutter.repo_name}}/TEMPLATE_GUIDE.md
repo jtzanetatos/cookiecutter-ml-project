@@ -72,6 +72,20 @@ This template is built around the following principles:
 
 ---
 
+## Dependency Management (uv)
+
+This project uses `uv` for blazing fast dependency management.
+
+| Command | Target Section in `pyproject.toml` | Use Case |
+| :--- | :--- | :--- |
+| `uv add <lib>` | `[project.dependencies]` | Core app code (src/) |
+| `uv add --dev <lib>` | `[dependency-groups.dev]` | Testing, Linting, Local Tools |
+| `uv add --optional <group> <lib>` | `[project.optional-dependencies.<group>]` | Optional features (e.g. notebooks) |
+
+Use `uv sync` to update your environment after pulling changes.
+
+---
+
 ## Configuration Model (Hydra)
 
 - All configuration lives under `config/`
@@ -99,7 +113,7 @@ Overrides happen via Hydra CLI or experiment configs.
 
 1. Explore ideas in `notebooks/`
 2. Validate assumptions
-3. Promote stable logic into `src/<{{cookiecutter.project_slug}}>/`
+3. Promote stable logic into `src/{{cookiecutter.project_slug}}/`
 4. Add tests
 5. Never let notebooks own production logic
 
@@ -167,7 +181,7 @@ CI enforces:
 
 When converting this repo to a cookiecutter template:
 
-- Replace `<{{cookiecutter.project_slug}}>` everywhere
+- Replace `{{cookiecutter.project_slug}}` everywhere
 - Preserve directory structure
 - Keep all README / INSTRUCTIONS files
 - Keep `TEMPLATE_GUIDE.md` unchanged

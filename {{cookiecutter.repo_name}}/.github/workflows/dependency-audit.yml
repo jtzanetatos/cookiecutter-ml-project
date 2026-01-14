@@ -3,8 +3,8 @@ name: Dependency Audit
 on:
   schedule:
     # Weekly, gentle scan – adjust as desired
-    - cron: "0 4 * * 1"  # Monday 04:00 UTC
-  workflow_dispatch:      # Allow manual runs from the UI
+    - cron: "0 4 * * 1" # Monday 04:00 UTC
+  workflow_dispatch: # Allow manual runs from the UI
 
 permissions:
   contents: read
@@ -15,12 +15,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
-          python-version: "3.13"
+          python-version: "{{ cookiecutter.python_version }}"
           enable-cache: true
 
       - name: Sync dependencies (runtime + dev)

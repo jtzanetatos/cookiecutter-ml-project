@@ -1,7 +1,7 @@
 [project]
-name = "my-ml-project"
+name = "{{cookiecutter.project_slug}}"
 version = "0.1.0"
-description = "Short description of the project."
+description = "{{cookiecutter.description}}"
 readme = "README.md"
 requires-python = ">=3.10"
 # Runtime dependencies that are safe to install in CI (CPU-only, not huge CUDA stacks)
@@ -20,9 +20,13 @@ dependencies = [
 gpu = [
     # CUDA / GPU-specific deps. NEVER installed in CI.
     # Adapt versions / wheels to your stack as needed.
+    {% if cookiecutter.ml_framework == 'pytorch' -%}
     "torch==2.9.1+cu130",
     "torchvision==0.24.1+cu130",
     "xformers>=0.0.28",
+    {%- elif cookiecutter.ml_framework == 'tensorflow' -%}
+    "tensorflow[and-cuda]>=2.16",
+    {%- endif %}
 ]
 notebooks = [
     "ipykernel",
@@ -96,6 +100,7 @@ docs-sphinx = [
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
+{% if cookiecutter.ml_framework == 'pytorch' -%}
 [[tool.uv.index]]
 name = "pytorch-cu130"
 url = "https://download.pytorch.org/whl/cu130"
@@ -104,6 +109,7 @@ explicit = true
 [tool.uv.sources]
 torch = { index = "pytorch-cu130" }
 torchvision = { index = "pytorch-cu130" }
+{% endif -%}
 
 # Ruff configuration (shared across repos)
 [tool.ruff]
@@ -111,7 +117,7 @@ torchvision = { index = "pytorch-cu130" }
 line-length = 88
 # CRITICAL: Change this to match your project's lowest supported version
 # e.g., "py310", "py311", "py312"
-target-version = "py310" 
+target-version = "{{ 'py' + cookiecutter.python_version.replace('.', '') }}" 
 extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
@@ -141,7 +147,7 @@ markers = [
 
 # Optional: mypy defaults
 [tool.mypy]
-python_version = "3.13"
+python_version = "{{ cookiecutter.python_version }}"
 strict = true
 mypy_path = ["src"]
 ignore_missing_imports = true

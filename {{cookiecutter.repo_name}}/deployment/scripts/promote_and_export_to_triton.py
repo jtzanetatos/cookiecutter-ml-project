@@ -9,9 +9,6 @@ Key properties:
 - Drops TensorFlow support (sklearn + torch only)
 - Triton repo output: <output_dir>/<model_name>/<version>/{model.onnx,config.pbtxt}
 """
-
-from __future__ import annotations
-
 import json
 import shutil
 from dataclasses import dataclass

@@ -21,12 +21,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "{% raw %}${{ matrix.python-version }}{% endraw %}"
           enable-cache: true
 
       # Install only what CI needs: base deps + dev tools
