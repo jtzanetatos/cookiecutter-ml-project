@@ -1,14 +1,33 @@
 {
   "repo_name": "my-ml-project",
   "project_title": "My ML Project",
+  "description": "A short description of the project.",
   "project_slug": "my_ml_project",
+  "ml_framework": [
+    "pytorch",
+    "tensorflow"
+  ],
+  "dataset_storage": [
+    "none",
+    "s3"
+  ],
+  "s3_bucket_name": "my-bucket",
+  "s3_endpoint_url": "",
+  "aws_profile": "default",
   "owner": "jtzanetatos",
   "github_owner": "jtzanetatos",
-  "license": "GPL-3.0",
-  "python_version": "3.12",
-  "hydra_args": "",
+  "license": [
+    "GPL-3.0",
+    "AGPL-3.0",
+    "CC-BY-NC-4.0"
+  ],
+  "python_version": [
+    "3.12",
+    "3.11",
+    "3.10",
+    "3.13"
+  ],
   "_copy_without_render": [
-    ".github/**",
     "deployment/k8s/helm/**",
     "deployment/api/**",
     "deployment/scripts/**"
