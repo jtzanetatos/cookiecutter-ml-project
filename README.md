@@ -20,6 +20,31 @@ This repository is the **cookiecutter wrapper** around an ML template repo. It e
 
 ---
 
+## License Selection Guide
+
+This template offers three license options. Choose carefully based on your goals:
+
+| License | Type | Best For |
+| :--- | :--- | :--- |
+| **GPL-3.0** | Copyleft | Open source projects where you want to ensure all forks remain open source. |
+| **AGPL-3.0** | Strong Copyleft | Web services / APIs. Prevents the "SaaS loophole" by requiring source code sharing even for network deployments. |
+| **CC-BY-NC-4.0** | Non-Commercial | Research/Personal projects. source available, but prevents others from making money off your work. |
+
+### Decision Flowchart
+
+```mermaid
+graph TD
+    A[Start] --> B{Is source code sharing required?}
+    B -- Yes --> C{Network Service?}
+    C -- Yes --> D["AGPL-3.0 (Strong Copyleft)"]
+    C -- No --> E["GPL-3.0 (Copyleft)"]
+    B -- No --> F{Commercial use allowed?}
+    F -- No --> G["CC-BY-NC-4.0 (Non-Commercial)"]
+    F -- Yes --> H[Consider MIT/Apache (Not in this template)]
+```
+
+---
+
 ## Quick start
 
 ### 1) Install prerequisites
