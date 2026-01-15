@@ -20,16 +20,16 @@ defaults:
 # --------------------------------------------------------------------
 
 project:
-  name: "CHANGE_ME_project_name"
-  env: "local"              # local | dev | prod
+  name: "{{cookiecutter.project_slug}}"
+  env: "local" # local | dev | prod
 
 seed: 42
 debug: false
 
 # CLI behaviour (used by entrypoints for sanity prints)
 cli:
-  print_header: true        # short summary: project/model/data/seed/env
-  print_config: false       # full resolved config (verbose)
+  print_header: true # short summary: project/model/data/seed/env
+  print_config: false # full resolved config (verbose)
   print_paths: false
 
 # --------------------------------------------------------------------
