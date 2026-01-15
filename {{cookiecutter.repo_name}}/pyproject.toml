@@ -12,6 +12,12 @@ dependencies = [
     "loguru>=0.7",
     "rich>=13.0",
     "dvc>=3.0",
+    {% if cookiecutter.ml_framework == 'pytorch' -%}
+    "torch>=2.2.0",
+    "torchvision>=0.17.0",
+    {%- elif cookiecutter.ml_framework == 'tensorflow' -%}
+    "tensorflow>=2.16",
+    {%- endif %}
     # add other core, CPU-safe libs here
 ]
 
@@ -28,6 +34,18 @@ gpu = [
     "tensorflow[and-cuda]>=2.16",
     {%- endif %}
 ]
+gpu = [
+    # CUDA / GPU-specific deps. NEVER installed in CI.
+    # Adapt versions / wheels to your stack as needed.
+    {% if cookiecutter.ml_framework == 'pytorch' -%}
+    "torch==2.9.1+cu130", 
+    "torchvision==0.24.1+cu130",
+    "xformers>=0.0.28",
+    {%- elif cookiecutter.ml_framework == 'tensorflow' -%}
+    "tensorflow[and-cuda]>=2.16",
+    {%- endif %}
+]
+
 notebooks = [
     "ipykernel",
     "jupyter>=1.0",
@@ -67,6 +85,7 @@ dev = [
 
     # security / deps
     "pip-audit>=2.5.5",
+    "pre-commit>=3.5",
 
     # notebooks
     "nbstripout>=0.8",
@@ -100,6 +119,8 @@ docs-sphinx = [
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
+
+
 {% if cookiecutter.ml_framework == 'pytorch' -%}
 [[tool.uv.index]]
 name = "pytorch-cu130"
@@ -107,8 +128,14 @@ url = "https://download.pytorch.org/whl/cu130"
 explicit = true
 
 [tool.uv.sources]
-torch = { index = "pytorch-cu130" }
-torchvision = { index = "pytorch-cu130" }
+torch = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux'" },
+  { index = "pypi", marker = "sys_platform != 'linux'" },
+]
+torchvision = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux'" },
+  { index = "pypi", marker = "sys_platform != 'linux'" },
+]
 {% endif -%}
 
 # Ruff configuration (shared across repos)
