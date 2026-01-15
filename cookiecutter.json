@@ -31,5 +31,10 @@
     "deployment/k8s/helm/**",
     "deployment/api/**",
     "deployment/scripts/**"
-  ]
+  ],
+  "__prompts__": {
+    "s3_bucket_name": "S3 Bucket Name (ignore if dataset_storage is 'none')",
+    "s3_endpoint_url": "S3 Endpoint URL (optional, for MinIO etc.)",
+    "aws_profile": "AWS Profile (for DVC configuration)"
+  }
 }

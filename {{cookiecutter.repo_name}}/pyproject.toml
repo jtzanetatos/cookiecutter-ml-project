@@ -34,17 +34,7 @@ gpu = [
     "tensorflow[and-cuda]>=2.16",
     {%- endif %}
 ]
-gpu = [
-    # CUDA / GPU-specific deps. NEVER installed in CI.
-    # Adapt versions / wheels to your stack as needed.
-    {% if cookiecutter.ml_framework == 'pytorch' -%}
-    "torch==2.9.1+cu130", 
-    "torchvision==0.24.1+cu130",
-    "xformers>=0.0.28",
-    {%- elif cookiecutter.ml_framework == 'tensorflow' -%}
-    "tensorflow[and-cuda]>=2.16",
-    {%- endif %}
-]
+
 
 notebooks = [
     "ipykernel",
