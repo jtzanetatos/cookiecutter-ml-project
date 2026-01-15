@@ -47,22 +47,26 @@ graph TD
 
 ## Quick start
 
-### 1) Install prerequisites
+### 1) Environment Setup
 
-- Python 3.12+ recommended
-- Cookiecutter
+This template provides a `environment.yaml` to ensure a deterministic environment with all necessary tools (cookiecutter, uv, etc.).
 
-Install cookiecutter (recommended via uv):
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/jtzanetatos/cookiecutter-ml-project.git
+   cd cookiecutter-ml-project
+   ```
 
-```bash
-uv tool install cookiecutter
-```
+2. Create and activate the conda environment:
+   ```bash
+   conda env create -f environment.yaml
+   conda activate template
+   ```
 
-Or via pip:
-
-```bash
-python -m pip install --upgrade cookiecutter
-```
+3. (Optional) Install `just` command runner:
+   ```bash
+   ./tools/install_just.sh
+   ```
 
 ### 2) Generate a new repository (interactive)
 
@@ -174,57 +178,12 @@ Docs tooling is expected to live in separate dependency groups so repos without 
 
 ---
 
-## Template maintenance workflow
+## Contributing & Maintenance
 
-This repo is intended to be kept in sync with an upstream “plain template repo”.
+This repo is just a cookiecutter wrapper.
 
-### Sync upstream template → cookiecutter template directory
-
-```bash
-./tools/sync_template_into_cookiecutter.sh /abs/path/to/ml-project-template
-```
-
-### Sync + smoke test generation
-
-```bash
-./tools/sync_and_smoke_test.sh /abs/path/to/ml-project-template
-```
-
----
-
-## Notes on templating and copy-without-render
-
-Some files contain template-like syntax that must **not** be rendered by Jinja (Helm charts, GitHub Actions expressions like `${{ ... }}`, etc.). Those must be listed in `cookiecutter.json` under `_copy_without_render`.
-
----
-
-## Release process (template repo)
-
-This repository is versioned independently as a **template**.
-
-Recommended process:
-
-1. Ensure `Cookiecutter Smoke Test` CI is green on `main`.
-2. Update `CHANGELOG.md` (template-level) with user-facing changes.
-3. Tag a release:
-
-```bash
-git tag -a vX.Y.Z -m "cookiecutter template vX.Y.Z"
-git push origin vX.Y.Z
-```
-
-4. (Optional) Create a GitHub Release for the tag and paste the changelog notes.
-
-Notes:
-
-- Generated projects are versioned separately in their own repositories.
-- Template tags communicate “what changed in the generator”, not in any particular generated repo.
-
----
-
-## Versioning
-
-This cookiecutter template can be versioned and tagged independently. Tag releases with `vX.Y.Z`.
+- **To update the template content** (sync from upstream, release, versioning, automated dependency updates), please see [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Maintenance scripts** are located in `tools/`.
 
 ---
 
