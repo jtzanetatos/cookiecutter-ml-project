@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue" alt="Python">
 
   <!-- License -->
-  <img src="https://img.shields.io/badge/license-GPL--3.0-green" alt="License">
+  <img src="https://img.shields.io/badge/license-{{cookiecutter.license}}-green" alt="License">
 
   <!-- CI -->
   <img src="https://img.shields.io/badge/CI-Woodpecker-success" alt="CI">
@@ -32,27 +32,29 @@
 
 ## Overview
 
-Describe **what this project does** in practical terms:
+## Overview
 
-- Problem being solved  
-- Type of model / system  
-- Expected inputs and outputs  
-- Intended users or downstream systems  
+<!-- 
+  TODO: Describe the project's purpose.
+  - Problem: What are you solving?
+  - Solution: What model/system are you building?
+  - Context: Who is it for? 
+-->
 
-Keep this section short and concrete.
+This project implements **[ ... ]** to solve **[ ... ]**. It accepts **[ inputs ]** and produces **[ outputs ]**.
 
 ---
 
 ## Key Features
 
-- Single‑source configuration via **Hydra**
-- Experiment tracking & model registry with **MLflow** (alias‑based lifecycle)
-- Optional data versioning & pipelines with **DVC**
-- Modular, testable code under `src/{{cookiecutter.project_slug}}/`
-- Notebook‑driven research → production promotion workflow
-- Deployment via **FastAPI**, **Docker**, **Kubernetes**
-- Optional **Triton Inference Server** export for high‑performance inference
-- CI‑driven linting, testing, and model promotion
+<!-- 
+  TODO: List 3-5 key capabilities. 
+  Examples: "Real-time inference < 10ms", "Daily retraining pipeline", "Streamlit dashboard"
+-->
+
+- [ ] **Feature A**: ...
+- [ ] **Feature B**: ...
+- [ ] **Feature C**: ...
 
 ---
 
@@ -83,134 +85,28 @@ Keep this section short and concrete.
 This project uses **PEP 621** (`pyproject.toml`).
 
 ```bash
-git clone <your-repo>
-cd <repo>
+git clone https://github.com/{{cookiecutter.github_owner}}/{{cookiecutter.repo_name}}.git
+cd {{cookiecutter.repo_name}}
+
 
 # Recommended
-uv pip install -e .
-```
+uv sync
 
-Optional extras:
+# Optional: Install extras
+uv sync --extra notebooks
+uv sync --extra mlops
 
-```bash
-uv pip install -e ".[notebooks]"
-uv pip install -e ".[mlops]"
-```
-
----
-
-## Training
-
-All training runs go through the Hydra entrypoint:
-
-```bash
-python -m {{cookiecutter.project_slug}}.cli.train
-```
-
-Example overrides:
-
-```bash
-python -m {{cookiecutter.project_slug}}.cli.train model=baseline trainer.fast_dev_run=true
-```
-
-Experiments are tracked in **MLflow** automatically.
-
----
-
-## Evaluation
-
-Offline evaluation logic lives under:
-
-```text
-src/{{cookiecutter.project_slug}}/evaluation/
-```
-
-Metrics and reports are logged via MLflow and/or written to `outputs/`.
-
----
-
-## Inference
-
-Reusable inference logic (no web code):
-
-```text
-src/{{cookiecutter.project_slug}}/inference/
-```
-
-This is consumed by:
-
-- FastAPI service (`deployment/api`)
-- Dashboards (`deployment/dashboards`)
-- Batch or offline scripts
-
----
-
-## Deployment
-
-Supported deployment paths:
-
-- **FastAPI** – flexible inference & business logic  
-- **Dashboards** – Streamlit / NiceGUI demos (optional)  
-- **Triton** – high‑performance tensor inference  
-
-All deployments load models from the **MLflow Model Registry** using aliases
-(`dev`, `staging`, `prod`, `archived`).
-
-See:
-
-```text
-deployment/README.md
 ```
 
 ---
 
-## Configuration
+## Documentation
 
-All configuration is defined under:
-
-```text
-config/
-```
-
-There is **no duplicated config** under `src/` and no `params.yaml`.
-
-Overrides are applied via Hydra CLI or experiment configs.
-
----
-
-## Development
-
-Run tests:
-
-```bash
-pytest
-```
-
-Lint & format:
-
-```bash
-ruff check .
-ruff format .
-```
-
-Notebook hygiene:
-
-```bash
-sh tools/setup_notebooks.sh
-```
-
----
-
-## Template Usage
-
-If this repo was generated from the ML project template:
-
-- Replace `{{cookiecutter.project_slug}}` everywhere
-- Fill in all directory‑level README files
-- Read **TEMPLATE_GUIDE.md** before modifying structure
+- **[TEMPLATE_GUIDE.md](TEMPLATE_GUIDE.md)**: Engineering patterns, training, configuration, and deployment.
+- **[CONTRIBUTING.md](CONTRIBUTING.md)**: Development setup, coding standards, and testing.
 
 ---
 
 ## License
 
-GPL‑3.0. See [LICENSE](LICENSE).
+{{cookiecutter.license}}. See [LICENSE](LICENSE).
