@@ -47,6 +47,25 @@ def run_pre_commit_update():
     else:
         print("pre-commit not found. Skipping hook update.")
 
+
+def init_git():
+    """Initializes git configuration."""
+    print("Initializing git repository...")
+    try:
+        subprocess.run(["git", "init"], check=True)
+        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "commit", "-m", "Initial commit from cookiecutter template"], check=True)
+        print("Git repository initialized.")
+        print("\nTo push to GitHub, run:")
+        print("  git remote add origin https://github.com/{{cookiecutter.github_owner}}/{{cookiecutter.repo_name}}.git")
+        print("  git branch -M main")
+        print("  git push -u origin main")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to initialize git: {e}")
+    except FileNotFoundError:
+        print("git command not found. Skipping git initialization.")
+
 if __name__ == "__main__":
     configure_dvc()
+    init_git()
     run_pre_commit_update()
