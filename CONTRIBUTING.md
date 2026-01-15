@@ -11,13 +11,14 @@ This repository is a **cookiecutter template**. Changes here affect every projec
 
 ## Development setup
 
-Install tooling (recommended via `uv`):
+Install tooling using the provided environment (recommended):
 
 ```bash
-uv tool install cookiecutter
-python -m pip install --upgrade pre-commit
-pre-commit install
+conda env create -f environment.yaml
+conda activate template
+./tools/install_just.sh  # Optional
 ```
+
 
 ## Making changes
 
@@ -64,6 +65,61 @@ make smoke SRC=/abs/path/to/ml-project-template OUT=../_generated
 - Avoid introducing Jinja-like sequences `{{ ... }}` inside template payload files unless they are cookiecutter placeholders.
 - If you add Helm templates or GitHub Actions workflow files under the payload, ensure they are covered by `_copy_without_render`.
 
-## Releasing the template
 
-See README “Release process”.
+## Template maintenance workflow
+
+This repo is intended to be kept in sync with an upstream “plain template repo”.
+
+### Sync upstream template → cookiecutter template directory
+
+```bash
+./tools/sync_template_into_cookiecutter.sh /abs/path/to/ml-project-template
+```
+
+### Sync + smoke test generation
+
+```bash
+./tools/sync_and_smoke_test.sh /abs/path/to/ml-project-template
+```
+
+### Update template dependencies
+
+The repository contains a custom automation to keep template dependencies (Python packages, GitHub Actions) fresh, effectively acting as a "Dependabot" for the template content.
+
+- **Automated**: Runs daily via the [Template Dependency Updates](.github/workflows/template-dependency-updates.yml) workflow.
+- **Manual**: You can run the underlying script locally:
+
+```bash
+python tools/update_dependencies.py
+```
+
+## Notes on templating and copy-without-render
+
+Some files contain template-like syntax that must **not** be rendered by Jinja (Helm charts, GitHub Actions expressions like `${{ ... }}`, etc.). Those must be listed in `cookiecutter.json` under `_copy_without_render`.
+
+## Release process (template repo)
+
+This repository is versioned independently as a **template**.
+
+Recommended process:
+
+1. Ensure `Cookiecutter Smoke Test` CI is green on `main`.
+2. Update `CHANGELOG.md` (template-level) with user-facing changes.
+3. Tag a release:
+
+```bash
+git tag -a vX.Y.Z -m "cookiecutter template vX.Y.Z"
+git push origin vX.Y.Z
+```
+
+4. (Optional) Create a GitHub Release for the tag and paste the changelog notes.
+
+Notes:
+
+- Generated projects are versioned separately in their own repositories.
+- Template tags communicate “what changed in the generator”, not in any particular generated repo.
+
+## Versioning
+
+This cookiecutter template can be versioned and tagged independently. Tag releases with `vX.Y.Z`.
+
