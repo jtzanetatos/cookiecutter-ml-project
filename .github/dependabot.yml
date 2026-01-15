@@ -9,3 +9,23 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  # Maintain pip dependencies (including those in environment.yaml)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    groups:
+      pip-dependencies:
+        patterns:
+          - "*"
+
+  # Maintain conda dependencies (in environment.yaml)
+  - package-ecosystem: "conda"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    groups:
+      conda-dependencies:
+        patterns:
+          - "*"
