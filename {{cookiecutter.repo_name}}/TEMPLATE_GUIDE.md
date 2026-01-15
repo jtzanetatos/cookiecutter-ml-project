@@ -20,6 +20,45 @@ This template is built around the following principles:
 
 ---
 
+## 7. Standard Operations
+
+### Training
+
+All training runs go through the Hydra entrypoint:
+
+```bash
+python -m {{cookiecutter.project_slug}}.cli.train
+```
+
+Example overrides:
+
+```bash
+python -m {{cookiecutter.project_slug}}.cli.train model=baseline trainer.fast_dev_run=true
+```
+
+Experiments are tracked in **MLflow** automatically.
+
+### Evaluation
+
+Offline evaluation logic lives under:
+
+```text
+src/{{cookiecutter.project_slug}}/evaluation/
+```
+
+Metrics and reports are logged via MLflow and/or written to `outputs/`.
+
+### Inference
+
+Reusable inference logic (no web code) lives in: `src/{{cookiecutter.project_slug}}/inference/`.
+
+This is consumed by:
+- FastAPI service (`deployment/api`)
+- Dashboards (`deployment/dashboards`)
+- Batch or offline scripts
+
+---
+
 ## High-Level Stack
 
 - **Hydra** — configuration management
@@ -191,7 +230,7 @@ When converting this repo to a cookiecutter template:
 
 ## License
 
-GPL-licensed template.
+{{ cookiecutter.license }}-licensed project.
 Derived projects must comply with the license terms.
 
 ---
