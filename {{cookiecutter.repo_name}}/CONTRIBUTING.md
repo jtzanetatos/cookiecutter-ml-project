@@ -31,18 +31,18 @@ This project uses the `src` layout, meaning the package must be installed to be 
 1. **Clone and Install**:
 
     ```bash
-    git clone <repo_url>
-    cd <repo_name>
-    pip install -e ".[dev]"  # Installs 'src' in editable mode + dev tools
+    git clone https://github.com/{{cookiecutter.github_owner}}/{{cookiecutter.repo_name}}.git
+    cd {{cookiecutter.repo_name}}
+    uv sync
     ```
 
-2. **Pull Data**:
+3. **Pull Data (If using DVC)**:
 
     ```bash
     dvc pull
     ```
 
-    *Note: You need credentials for the DVC remote storage (e.g., S3/GDrive) if not working locally.*
+    *Note: You need credentials for the DVC remote storage (e.g., S3/GDrive) if not working locally. If DVC is not configured, skip this.*
 
 3. **Setup Pre-commit Hooks**:
 
