@@ -34,13 +34,13 @@ This template offers three license options. Choose carefully based on your goals
 
 ```mermaid
 graph TD
-    A[Start] --> B{Is source code sharing required?}
-    B -- Yes --> C{Network Service?}
+    A["Start"] --> B{"Is source code sharing required?"}
+    B -- Yes --> C{"Network Service?"}
     C -- Yes --> D["AGPL-3.0 (Strong Copyleft)"]
     C -- No --> E["GPL-3.0 (Copyleft)"]
-    B -- No --> F{Commercial use allowed?}
+    B -- No --> F{"Commercial use allowed?"}
     F -- No --> G["CC-BY-NC-4.0 (Non-Commercial)"]
-    F -- Yes --> H[Consider MIT/Apache (Not in this template)]
+    F -- Yes --> H["Consider MIT/Apache (Not in this template)"]
 ```
 
 ---
