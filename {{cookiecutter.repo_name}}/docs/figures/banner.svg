@@ -56,7 +56,7 @@
   <path d="M 40 80 L 50 80 L 50 200 L 40 200 Z" fill="#00f0ff" opacity="0.6"/>
 
   <text x="120" y="110" font-size="42" font-weight="bold" letter-spacing="2" class="text-primary">
-    {{cookiecutter.project_slug}}
+    {{cookiecutter.project_title}}
   </text>
   
   <text x="120" y="150" font-size="18" class="text-desc">
