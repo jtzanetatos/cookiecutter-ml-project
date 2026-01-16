@@ -54,13 +54,27 @@ def init_git():
     print("Initializing git repository...")
     try:
         subprocess.run(["git", "init"], check=True)
+        print("Git repository initialized.")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to initialize git: {e}")
+    except FileNotFoundError:
+        print("git command not found. Skipping git initialization.")
+
+def commit_git():
+    """Commits the initial project structure to git."""
+    print("Committing initial files to git...")
+    try:
         subprocess.run(["git", "add", "."], check=True)
         subprocess.run(["git", "commit", "-m", "Initial commit from cookiecutter template"], check=True)
-        print("Git repository initialized.")
+        print("Initial commit created.")
         print("\nTo push to GitHub, run:")
         print("  git remote add origin https://github.com/{{cookiecutter.github_owner}}/{{cookiecutter.repo_name}}.git")
         print("  git branch -M main")
         print("  git push -u origin main")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to commit to git: {e}")
+    except FileNotFoundError:
+        print("git command not found. Skipping git commit.")
     except subprocess.CalledProcessError as e:
         print(f"Failed to initialize git: {e}")
     except FileNotFoundError:
@@ -70,3 +84,4 @@ if __name__ == "__main__":
     init_git()
     configure_dvc()
     run_pre_commit_update()
+    commit_git()
