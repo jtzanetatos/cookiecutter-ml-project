@@ -228,6 +228,13 @@ When converting this repo to a cookiecutter template:
 
 ---
 
+## Cookiecutter Quirks
+
+- **S3 Prompts**: You will be asked for S3 configuration (buckets, etc.) even if you select `dataset_storage="none"`. This is a limitation of the cookiecutter CLI. **You can safely ignore these prompts (press Enter)**; they are not used when S3 is disabled.
+- **DVC Initialization**: Git initialization runs first, followed by DVC initialization.
+
+---
+
 ## License
 
 {{ cookiecutter.license }}-licensed project.
