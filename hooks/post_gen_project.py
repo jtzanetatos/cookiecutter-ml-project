@@ -4,21 +4,22 @@ import os
 
 
 def configure_dvc():
-    """Configures DVC remote if S3 is selected."""
+    """Configures DVC."""
     dataset_storage = "{{ cookiecutter.dataset_storage }}"
-    if dataset_storage == "s3":
-        bucket = "{{ cookiecutter.s3_bucket_name }}"
-        endpoint = "{{ cookiecutter.s3_endpoint_url }}"
-        profile = "{{ cookiecutter.aws_profile }}"
-        
-        print(f"Configuring DVC for S3 bucket: {bucket}")
-        
-        # Add remote
-        try:
-            # Initialize DVC if not already initialized
-            if not os.path.exists(".dvc"):
-                 subprocess.run(["dvc", "init", "--no-scm"], check=True)
+    
+    try:
+        # Initialize DVC if not already initialized
+        if not os.path.exists(".dvc"):
+             subprocess.run(["dvc", "init"], check=True)
 
+        if dataset_storage == "s3":
+            bucket = "{{ cookiecutter.s3_bucket_name }}"
+            endpoint = "{{ cookiecutter.s3_endpoint_url }}"
+            profile = "{{ cookiecutter.aws_profile }}"
+            
+            print(f"Configuring DVC for S3 bucket: {bucket}")
+            
+            # Add remote
             subprocess.run(["dvc", "remote", "add", "-d", "storage", f"s3://{bucket}"], check=True)
             
             # Set endpoint if provided (for self-hosted/minio)
@@ -30,10 +31,10 @@ def configure_dvc():
                 subprocess.run(["dvc", "remote", "modify", "storage", "profile", profile], check=True)
                 
             print("DVC configured successfully.")
-        except subprocess.CalledProcessError as e:
-            print(f"Failed to configure DVC: {e}")
-        except FileNotFoundError:
-             print("dvc command not found. Skipping DVC configuration.")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to configure DVC: {e}")
+    except FileNotFoundError:
+         print("dvc command not found. Skipping DVC configuration.")
 
 def run_pre_commit_update():
     """Runs 'pre-commit autoupdate' if pre-commit is installed."""
@@ -66,6 +67,6 @@ def init_git():
         print("git command not found. Skipping git initialization.")
 
 if __name__ == "__main__":
-    configure_dvc()
     init_git()
+    configure_dvc()
     run_pre_commit_update()
