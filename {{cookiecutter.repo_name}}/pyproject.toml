@@ -3,7 +3,7 @@ name = "{{cookiecutter.project_slug}}"
 version = "0.1.0"
 description = "{{cookiecutter.description}}"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">={{cookiecutter.python_version}}"
 # Runtime dependencies that are safe to install in CI (CPU-only, not huge CUDA stacks)
 dependencies = [
     "numpy>=1.26",
@@ -27,11 +27,11 @@ gpu = [
     # CUDA / GPU-specific deps. NEVER installed in CI.
     # Adapt versions / wheels to your stack as needed.
     {% if cookiecutter.ml_framework == 'pytorch' -%}
-    "torch==2.9.1+cu130",
-    "torchvision==0.24.1+cu130",
-    "xformers>=0.0.28",
+    "torch==2.9.1+cu130 ; sys_platform == 'linux'",
+    "torchvision==0.24.1+cu130 ; sys_platform == 'linux'",
+    "xformers>=0.0.28 ; sys_platform == 'linux'",
     {%- elif cookiecutter.ml_framework == 'tensorflow' -%}
-    "tensorflow[and-cuda]>=2.16",
+    "tensorflow[and-cuda]>=2.16 ; sys_platform == 'linux'",
     {%- endif %}
 ]
 
@@ -112,6 +112,10 @@ build-backend = "setuptools.build_meta"
 
 
 {% if cookiecutter.ml_framework == 'pytorch' -%}
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+
 [[tool.uv.index]]
 name = "pytorch-cu130"
 url = "https://download.pytorch.org/whl/cu130"
