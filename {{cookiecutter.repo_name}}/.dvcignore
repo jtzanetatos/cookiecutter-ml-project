@@ -36,7 +36,6 @@ logs/
 # Ignore intermediate ML artifacts
 checkpoints/
 artifacts/
-outputs/
 models/
 
 # Ignore DVC cache directories created during operations

@@ -1,5 +1,16 @@
 # Ignore Model Artifacts
 checkpoints/
+outputs/
+models/
+logs/
+
+# ML Artifacts
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.pkl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
