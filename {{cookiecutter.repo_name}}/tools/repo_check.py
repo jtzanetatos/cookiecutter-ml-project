@@ -171,10 +171,11 @@ def main() -> int:
     # --- woodpecker (optional but expected if using it) ---
     if (
         not (root / ".woodpecker.yml").exists()
+        and not (root / ".woodpecker" / "ci.yml").exists()
         and not (root / ".woodpecker" / "cli.yml").exists()
     ):
         warn(
-            "WARN: no Woodpecker pipeline found (.woodpecker.yml or .woodpecker/cli.yml).",
+            "WARN: no Woodpecker pipeline found (.woodpecker.yml or .woodpecker/ci.yml).",
             warnings,
         )
 

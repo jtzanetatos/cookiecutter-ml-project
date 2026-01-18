@@ -138,16 +138,16 @@ def run_checks(*, skip: bool) -> None:
     # This template expects ruff + pytest as dev deps.
     print("Running ruff + pytest...")
     try:
-        run(["ruff", "check", "."])
-        run(["ruff", "format", "--check", "."])
+        run(["uv", "run", "ruff", "check", "."])
+        run(["uv", "run", "ruff", "format", "--check", "."])
     except FileNotFoundError:
         raise SystemExit(
-            "ruff is not available in this environment. Install dev deps or use --skip-checks."
+            "uv is not available. Please install uv."
         )
 
     # pytest: treat "no tests collected" (exit 5) as success for templates
     try:
-        p = subprocess.run(["pytest"], text=True)
+        p = subprocess.run(["uv", "run", "pytest"], text=True)
         if p.returncode == 5:
             print("pytest: no tests collected (exit code 5). Treating as success.")
         elif p.returncode != 0:
