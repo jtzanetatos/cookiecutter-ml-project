@@ -36,6 +36,23 @@ def configure_dvc():
     except FileNotFoundError:
          print("dvc command not found. Skipping DVC configuration.")
 
+def remove_framework_files():
+    """Removes framework-specific files that are not needed."""
+    ml_framework = "{{ cookiecutter.ml_framework }}"
+    project_slug = "{{ cookiecutter.project_slug }}"
+    
+    if ml_framework == "tensorflow":
+        # Remove PyTorch-specific files
+        files_to_remove = [
+            f"src/{project_slug}/data/datamodule.py",
+            f"src/{project_slug}/data/transforms.py",
+        ]
+        
+        for file_path in files_to_remove:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                print(f"Removed unused file: {file_path}")
+
 def run_pre_commit_update():
     """Runs 'pre-commit autoupdate' if pre-commit is installed."""
     if shutil.which("pre-commit"):
@@ -77,7 +94,8 @@ def commit_git():
         print("git command not found. Skipping git commit.")
 
 if __name__ == "__main__":
+    remove_framework_files()
+    run_pre_commit_update()
     init_git()
     configure_dvc()
-    run_pre_commit_update()
     commit_git()
