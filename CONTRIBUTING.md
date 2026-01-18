@@ -14,9 +14,11 @@ This repository is a **cookiecutter template**. Changes here affect every projec
 Install tooling using the provided environment (recommended):
 
 ```bash
-conda env create -f environment.yaml
-conda activate template
-./tools/install_just.sh  # Optional
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create virtual environment and install dev dependencies
+uv sync
 ```
 
 
