@@ -1,4 +1,4 @@
-from __future__ import annotations
+{% if cookiecutter.ml_framework == 'pytorch' %}
 
 import torch
 from torch import nn
@@ -18,3 +18,4 @@ class MLPClassifier(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
+{% endif %}

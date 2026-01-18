@@ -1,5 +1,5 @@
+{% if cookiecutter.ml_framework == 'pytorch' %}
 from __future__ import annotations
-
 import pytorch_lightning as pl
 from loguru import logger
 from omegaconf import DictConfig
@@ -32,3 +32,8 @@ def fit(
     logger.info("Fitting model...")
     trainer.fit(lightning_module, datamodule=datamodule)
     return trainer
+{% else %}
+# For TensorFlow, training loops are often handled directly via model.fit()
+# or custom loops in train.py. This file is a placeholder.
+pass
+{% endif %}

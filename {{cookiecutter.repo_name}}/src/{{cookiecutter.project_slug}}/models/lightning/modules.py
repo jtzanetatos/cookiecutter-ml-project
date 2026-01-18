@@ -1,3 +1,4 @@
+{% if cookiecutter.ml_framework == 'pytorch' %}
 from __future__ import annotations
 
 import pytorch_lightning as pl
@@ -36,3 +37,5 @@ class ClassificationModule(pl.LightningModule):
         return torch.optim.AdamW(
             self.parameters(), lr=self.lr, weight_decay=self.weight_decay
         )
+
+{% endif %}
