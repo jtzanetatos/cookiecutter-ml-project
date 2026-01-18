@@ -1,6 +1,7 @@
 # Fast development / smoke-test trainer configuration
 # Intended for quick iteration and CI sanity checks.
 
+{% if cookiecutter.ml_framework == 'pytorch' %}
 _target_: pytorch_lightning.Trainer
 
 # Lightning built-in fast dev mode (runs a very small number of batches)
@@ -13,3 +14,9 @@ devices: 1
 # Keep logs concise
 enable_progress_bar: true
 log_every_n_steps: 1
+{% else %}
+# Keras / Generic fast dev config
+epochs: 1
+batch_size: 2
+debug: true
+{% endif %}

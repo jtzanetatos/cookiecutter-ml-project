@@ -5,7 +5,11 @@ name: "CHANGE_ME_model_name"
 
 # Hydra instantiation target
 # Prefer instantiating a LightningModule (recommended) or a pure nn.Module.
-_target_: {{cookiecutter.project_slug}}.models.MyModel  # CHANGE_ME
+{% if cookiecutter.ml_framework == 'pytorch' %}
+_target_: {{cookiecutter.project_slug}}.models.torch.nets.MLPClassifier
+{% else %}
+_target_: null # Factory-based instantiation used for TensorFlow/Keras
+{% endif %}
 
 # Model hyperparameters (example placeholders)
 hidden_dim: 256
