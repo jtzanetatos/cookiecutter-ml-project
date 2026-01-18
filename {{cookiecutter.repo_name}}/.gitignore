@@ -11,6 +11,9 @@ logs/
 *.safetensors
 *.onnx
 *.pkl
+*.h5
+*.keras
+*.tflite
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
