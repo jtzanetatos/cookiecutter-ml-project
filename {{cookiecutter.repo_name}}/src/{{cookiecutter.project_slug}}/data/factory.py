@@ -1,13 +1,20 @@
-from __future__ import annotations
-
 from omegaconf import DictConfig
 
+{% if cookiecutter.ml_framework == 'pytorch' %}
 from {{cookiecutter.project_slug}}.data.datamodule import DataModuleConfig, RandomDataModule
 from {{cookiecutter.project_slug}}.data.datasets import RandomDatasetConfig
 from {{cookiecutter.project_slug}}.data.transforms import Identity
+{% else %}
+from dataclasses import dataclass
+@dataclass
+class RandomDataModule:
+    n_features: int
+    n_classes: int
+{% endif %}
 
 
 def build_datamodule(cfg: DictConfig) -> RandomDataModule:
+    {% if cookiecutter.ml_framework == 'pytorch' %}
     ds_cfg = RandomDatasetConfig(
         n_samples=int(cfg.data.get("n_samples", 1024)),
         n_features=int(cfg.data.get("n_features", 32)),
@@ -24,3 +31,9 @@ def build_datamodule(cfg: DictConfig) -> RandomDataModule:
     )
     transform = Identity()
     return RandomDataModule(ds_cfg, dm_cfg, transform=transform)
+    {% else %}
+    return RandomDataModule(
+        n_features=int(cfg.data.get("n_features", 32)),
+        n_classes=int(cfg.data.get("n_classes", 2)),
+    )
+    {% endif %}

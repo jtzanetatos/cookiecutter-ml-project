@@ -1,4 +1,4 @@
-from __future__ import annotations
+{% if cookiecutter.ml_framework == 'pytorch' %}
 
 from dataclasses import dataclass
 from typing import Callable, Optional
@@ -79,3 +79,4 @@ class RandomDataModule(pl.LightningDataModule):
             pin_memory=self.dm_cfg.pin_memory,
             persistent_workers=self.dm_cfg.persistent_workers,
         )
+{% endif %}
