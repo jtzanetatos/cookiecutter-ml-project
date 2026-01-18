@@ -12,9 +12,11 @@ dependencies = [
     "loguru>=0.7",
     "rich>=13.0",
     "dvc>=3.0",
+    "mlflow>=2.11",
     {% if cookiecutter.ml_framework == 'pytorch' -%}
     "torch>=2.2.0",
     "torchvision>=0.17.0",
+    "pytorch-lightning>=2.0.0",
     {%- elif cookiecutter.ml_framework == 'tensorflow' -%}
     "tensorflow>=2.16",
     {%- endif %}
@@ -43,7 +45,6 @@ notebooks = [
 ]
 mlops = [
     "dvc-s3>=3.0",
-    "mlflow>=3.0",
 ]
 bigmodels = ["transformers", "datasets"]
 

@@ -63,19 +63,19 @@ check: lint format test
 
 # Run ruff linter
 lint:
-    ruff check src tests
+    uv run ruff check src tests
 
 # Run code formatting
 format:
-    ruff format src tests
+    uv run ruff format src tests
 
 # Run static type checking
 type-check:
-    mypy src
+    uv run mypy src
 
 # Run tests
 test:
-    pytest tests/
+    uv run pytest tests/
 
 # -----------------------------------------------------------------------------
 # MLOps & Training
@@ -84,12 +84,32 @@ test:
 # Run training. Usage: just train experiment=baseline model.lr=0.01
 # The '+' allows passing arbitrary arguments to hydra
 train +hydra_args:
-    python -m {{ cookiecutter.project_slug }}.cli.train {{ '{{' }} hydra_args {{ '}}' }}
+    uv run python -m {{ cookiecutter.project_slug }}.cli.train {{ '{{' }} hydra_args {{ '}}' }}
 
 # Run a hyperparameter sweep (Optuna)
 sweep:
-    python -m {{ cookiecutter.project_slug }}.cli.train -m hydra/sweeper=optuna
+    uv run python -m {{ cookiecutter.project_slug }}.cli.train -m hydra/sweeper=optuna
 
 # Start the MLFlow UI
 mlflow:
-    mlflow ui
+    uv run mlflow ui
+
+# -----------------------------------------------------------------------------
+# Docker & Deployment
+# -----------------------------------------------------------------------------
+
+# Build the API server Docker image
+docker-build:
+    docker build -t {{ cookiecutter.project_slug }}:latest -f deployment/docker/Dockerfile .
+
+# Run the API server container (locally)
+docker-run:
+    docker run --rm -p 8000:8000 --env-file .env {{ cookiecutter.project_slug }}:latest
+
+# -----------------------------------------------------------------------------
+# Release
+# -----------------------------------------------------------------------------
+
+# Create a new release (tag + push)
+release version part="patch":
+    uv run python tools/release.py --part {{ '{{' }} part {{ '}}' }}

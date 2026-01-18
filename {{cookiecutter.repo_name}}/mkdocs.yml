@@ -1,0 +1,23 @@
+site_name: { { cookiecutter.project_title } }
+site_description: { { cookiecutter.description } }
+site_author: { { cookiecutter.author_name } }
+
+repo_url: https://github.com/{{cookiecutter.github_owner}}/{{cookiecutter.repo_name}}
+repo_name: { { cookiecutter.repo_name } }
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - content.code.copy
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Design:
+      - design/index.md
+  - API Reference:
+      - api/index.md
