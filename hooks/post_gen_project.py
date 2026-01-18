@@ -75,10 +75,6 @@ def commit_git():
         print(f"Failed to commit to git: {e}")
     except FileNotFoundError:
         print("git command not found. Skipping git commit.")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to initialize git: {e}")
-    except FileNotFoundError:
-        print("git command not found. Skipping git initialization.")
 
 if __name__ == "__main__":
     init_git()
