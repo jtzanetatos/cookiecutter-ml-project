@@ -14,15 +14,19 @@ from loguru import logger
 from omegaconf import DictConfig
 
 from {{cookiecutter.project_slug}}.data.factory import build_datamodule
+{% if cookiecutter.ml_framework == 'pytorch' %}
+from {{cookiecutter.project_slug}}.models.factory import build_lightning_module
+from {{cookiecutter.project_slug}}.training.loops import fit
 from {{cookiecutter.project_slug}}.evaluation.evaluate import maybe_run_offline_eval
+{% elif cookiecutter.ml_framework == 'tensorflow' %}
+from {{cookiecutter.project_slug}}.models.factory import build_keras_model
+{% endif %}
+from {{cookiecutter.project_slug}}.utils.seed import seed_everything
 from {{cookiecutter.project_slug}}.integrations.mlflow import (
     log_resolved_config,
     maybe_init_mlflow,
     set_standard_tags,
 )
-from {{cookiecutter.project_slug}}.models.factory import build_lightning_module
-from {{cookiecutter.project_slug}}.training.loops import fit
-from {{cookiecutter.project_slug}}.utils.seed import seed_everything
 
 
 @hydra.main(
@@ -53,11 +57,18 @@ def main(cfg: DictConfig) -> None:
 
 def _run_training(cfg: DictConfig) -> None:
     dm = build_datamodule(cfg)
+    
+    {% if cookiecutter.ml_framework == 'pytorch' %}
     lm = build_lightning_module(cfg)
-
     trainer = fit(cfg, lightning_module=lm, datamodule=dm)
-
     maybe_run_offline_eval(cfg, trainer=trainer, datamodule=dm, lightning_module=lm)
+    {% elif cookiecutter.ml_framework == 'tensorflow' %}
+    logger.info("Initializing Keras model...")
+    model = build_keras_model(cfg, n_features=dm.n_features, n_classes=dm.n_classes) # Assuming dm handles data loading/parsing info
+    
+    logger.info("Starting Keras training (placeholder)...")
+    # model.fit(...)
+    {% endif %}
 
 
 if __name__ == "__main__":
