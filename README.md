@@ -15,6 +15,7 @@ Cookiecutter template for creating production-oriented Python ML repositories wi
 - Docker + optional Kubernetes/Helm skeleton
 - GitHub Actions workflows (tests/lint/type-check/etc.)
 - `uv`-first dependency management (lockfile-based)
+- **Multi-Framework:** Native support for PyTorch (Lightning) and TensorFlow (Keras)
 
 This repository is the **cookiecutter wrapper** around an ML template repo. It exists to generate new project repositories quickly and consistently.
 
@@ -161,10 +162,12 @@ GPU dependencies are defined as an optional extra in generated repos, but are **
 Example (generated repo):
 
 ```bash
-uv pip install -e ".[gpu]" \
-  --index https://download.pytorch.org/whl/cu130 \
-  --index https://pypi.org/simple
+uv sync --extra gpu
+# OR
+uv pip install -e ".[gpu]"
 ```
+
+(The `pyproject.toml` automatically handles the PyTorch/CUDA index URLs via `tool.uv.sources`.)
 
 CI never installs GPU extras.
 
