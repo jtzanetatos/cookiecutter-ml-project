@@ -2,20 +2,22 @@
 import re
 import json
 import urllib.request
-import sys
 import os
+import subprocess
+import shutil
+import tempfile
 from pathlib import Path
 
 # Path to the template's pyproject.toml
 PYPROJECT_PATH = Path("{{cookiecutter.repo_name}}/pyproject.toml")
 WORKFLOWS_DIR = Path("{{cookiecutter.repo_name}}/.github/workflows")
+PRECOMMIT_CONFIG = Path(".pre-commit-config.yaml") # This is for the template repo itself, usually root
 
 # Regex to find dependencies formatted as "package==version" or "package>=version"
-DEP_PATTERN = re.compile(r'"([a-zA-Z0-9_\-]+)(==|>=)([\d\.]+)"')
+# Handles single/double quotes, spaces, and PEP 440 versions (digits, dots, chars, +, -)
+DEP_PATTERN = re.compile(r'["\']([a-zA-Z0-9_\-]+)\s*(==|>=)\s*([a-zA-Z0-9\.\-\+]+)["\']')
 
 # Regex to find GitHub Actions "uses: owner/repo@version"
-# Captures: 1=owner, 2=repo, 3=version (tag/branch/hash)
-# We focus on @vX or @vX.Y.Z tags primarily for updates
 ACTION_PATTERN = re.compile(r'uses:\s+([a-zA-Z0-9_\-]+)/([a-zA-Z0-9_\-]+)@([a-zA-Z0-9_\-\.]+)')
 
 def get_latest_pypi_version(package_name):
@@ -29,14 +31,11 @@ def get_latest_pypi_version(package_name):
         print(f"  [!] Skipped {package_name}: {e}")
         return None
 
-def get_latest_action_version(owner, repo):
+def get_latest_action_version(owner, repo, token=None):
     """Query GitHub API for the latest release of an action."""
-    # Try getting the latest release first
     url = f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
     req = urllib.request.Request(url)
     
-    # Use GITHUB_TOKEN if available to avoid rate limits
-    token = os.environ.get("GITHUB_TOKEN")
     if token:
         req.add_header("Authorization", f"Bearer {token}")
     
@@ -58,12 +57,74 @@ def _get_latest_tag_fallback(owner, repo, token):
         with urllib.request.urlopen(req, timeout=5) as response:
             data = json.loads(response.read().decode())
             if data and isinstance(data, list):
-                # Simple heuristic: return the first tag. 
-                # Ideally we'd sort semanctically, but often the first return is latest.
+                # Return the first tag (heuristic for latest)
                 return data[0]["name"]
     except Exception as e:
         print(f"  [!] Skipped action {owner}/{repo}: {e}")
     return None
+
+def validate_with_uv(new_pyproject_content):
+    """
+    Validates that the new pyproject.toml content allows for a successful 'uv lock'.
+    
+    Strategy:
+    1. Temporarily write the new content to the template.
+    2. Render the template using cookiecutter to a temp dir.
+    3. Run 'uv lock' in the generated project.
+    4. Revert the template file change.
+    """
+    print("    [?] Validating dependency resolution with uv...")
+    original_content = PYPROJECT_PATH.read_text()
+    
+    # 1. Apply candidate change
+    PYPROJECT_PATH.write_text(new_pyproject_content)
+    
+    valid = False
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            try:
+                # 2. Render template (use minimal inputs)
+                subprocess.run(
+                    [
+                        "uv", "run", "cookiecutter", ".", 
+                        "--no-input", 
+                        f"--output-dir={tmp_dir}", 
+                        "project_slug=validation_proj",
+                        "ml_framework=pytorch" 
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+                
+                project_path = Path(tmp_dir) / "validation_proj"
+                
+                # 3. Run uv lock
+                result = subprocess.run(
+                    ["uv", "lock"],
+                    cwd=project_path,
+                    capture_output=True,
+                    text=True
+                )
+                
+                if result.returncode == 0:
+                    print("    [OK] Validation successful.")
+                    valid = True
+                else:
+                    print(f"    [!] Validation FAILED:\n{result.stderr}")
+                    
+            except subprocess.CalledProcessError as e:
+                print(f"    [!] Validation crashed (subprocess): {e}\nSTDOUT: {e.stdout}\nSTDERR: {e.stderr}")
+            except Exception as e:
+                print(f"    [!] Validation crashed: {e}")
+                
+    finally:
+        # 4. Revert immediately (we only write permanently if/when the caller decides)
+        # The caller (update_python_dependencies) calls write_text AGAIN if valid.
+        # So it is safe to always revert here to restore clean state.
+        PYPROJECT_PATH.write_text(original_content)
+    
+    return valid
 
 def update_python_dependencies():
     if not PYPROJECT_PATH.exists():
@@ -73,68 +134,76 @@ def update_python_dependencies():
     print(f"Checking Python dependencies in {PYPROJECT_PATH}...")
     content = PYPROJECT_PATH.read_text()
     new_content = content
-    matches = DEP_PATTERN.findall(content)
-    updates_made = False
+    # Look for exact string matches from regex to safely replace
+    updates_candidate_content = content
+    has_candidates = False
 
-    for package, operator, current_version in matches:
+    for match in DEP_PATTERN.finditer(content):
+        package = match.group(1)
+        operator = match.group(2)
+        current_version = match.group(3)
+        full_match = match.group(0) 
+        
         if operator == "==":
-            print(f"  checking {package} (current: {current_version})...")
             latest = get_latest_pypi_version(package)
-            
             if latest and latest != current_version:
-                print(f"    -> Updating to {latest}")
-                old_str = f'"{package}{operator}{current_version}"'
-                new_str = f'"{package}{operator}{latest}"'
-                new_content = new_content.replace(old_str, new_str)
-                updates_made = True
+                 print(f"  checking {package}: {current_version} -> {latest}")
+                 # Apply update to candidate content
+                 new_block = full_match.replace(current_version, latest)
+                 updates_candidate_content = updates_candidate_content.replace(full_match, new_block)
+                 has_candidates = True
 
-    if updates_made:
-        print(f"Writing changes to {PYPROJECT_PATH}...")
-        PYPROJECT_PATH.write_text(new_content)
-        return True
-    else:
-        print("  No Python updates found.")
+    if has_candidates:
+        # Validate the BATCH of updates (all at once)
+        if validate_with_uv(updates_candidate_content):
+            print(f"Writing validated changes to {PYPROJECT_PATH}...")
+            PYPROJECT_PATH.write_text(updates_candidate_content)
+            return True
+        else:
+            print("  [!] Skipping updates due to validation failure.")
+            return False
+    
+    print("  No Python updates found.")
+    return False
+
+def update_workflow_files(directory):
+    """Scans workflow files in a given directory for action updates."""
+    dir_path = Path(directory)
+    if not dir_path.exists():
+        print(f"Warning: {dir_path} not found.")
         return False
 
-def update_github_actions():
-    if not WORKFLOWS_DIR.exists():
-        print(f"Warning: {WORKFLOWS_DIR} not found.")
-        return False
-
-    print(f"Checking GitHub Actions in {WORKFLOWS_DIR}/*.yml...")
+    print(f"Checking GitHub Actions in {dir_path}/*.yml...")
     updates_made = False
+    
+    token = os.environ.get("GITHUB_TOKEN")
 
-    for workflow_file in WORKFLOWS_DIR.glob("*.yml"):
+    for workflow_file in dir_path.glob("*.yml"):
         print(f"  Scanning {workflow_file.name}...")
         content = workflow_file.read_text()
         new_content = content
-        matches = ACTION_PATTERN.findall(content)
         
         file_changed = False
-        for owner, repo, current_version in matches:
-            # Skip if it is a local path or strange version
-            if current_version.startswith("v"):
-                 # Only try to update things that look like semantic versions or v-tags
-                 pass
-            else:
-                # Could be a hash or branch, skip for safety unless we want to be aggressive
-                # For this implementation, let's treat everything as updateable if we find a tag
-                pass
+        for match in ACTION_PATTERN.finditer(content):
+            owner = match.group(1)
+            repo = match.group(2)
+            current_version = match.group(3)
+            full_match = match.group(0)
+            
+            # Skip if not a version tag
+            if not (current_version.startswith("v") or "." in current_version):
+                continue
 
-            latest_tag = get_latest_action_version(owner, repo)
+            latest_tag = get_latest_action_version(owner, repo, token)
             if latest_tag and latest_tag != current_version:
-                 # Check if latest_tag matches the style (v prefix)
+                 # Standardize 'v' prefix
                  if current_version.startswith("v") and not latest_tag.startswith("v"):
                      latest_tag = f"v{latest_tag}"
                  
-                 # Basic major version check? 
-                 # Often actions uses @v3 so updating to @v4.0.0 might be unwanted if we want to stay on v3.
-                 # But the user request is generic "update". Let's assume upgrading to latest tag is okay.
                  if latest_tag != current_version:
-                    print(f"    -> Updating {owner}/{repo} from {current_version} to {latest_tag}")
-                    old_str = f"uses: {owner}/{repo}@{current_version}"
-                    new_str = f"uses: {owner}/{repo}@{latest_tag}"
-                    new_content = new_content.replace(old_str, new_str)
+                    print(f"    -> Updating {owner}/{repo}: {current_version} -> {latest_tag}")
+                    new_block = full_match.replace(current_version, latest_tag)
+                    new_content = new_content.replace(full_match, new_block)
                     file_changed = True
         
         if file_changed:
@@ -144,12 +213,33 @@ def update_github_actions():
 
     return updates_made
 
+def update_pre_commit():
+    """Run pre-commit autoupdate for the repository's own configuration."""
+    root_config = Path(".pre-commit-config.yaml")
+    
+    if root_config.exists():
+        print(f"Updating root pre-commit hooks in {root_config}...")
+        try:
+            # Check if pre-commit is installed
+            subprocess.run(["pre-commit", "--version"], check=True, capture_output=True)
+            subprocess.run(["pre-commit", "autoupdate"], check=True)
+            return True
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            print("  [!] Failed to run pre-commit autoupdate (is it installed?)")
+    
+    return False
+
 if __name__ == "__main__":
     print("Starting dependency updates...")
     py_updated = update_python_dependencies()
-    gh_updated = update_github_actions()
     
-    if py_updated or gh_updated:
+    # Update both template workflows and the repo's own workflows
+    gh_updated_template = update_workflow_files(WORKFLOWS_DIR)
+    gh_updated_root = update_workflow_files(".github/workflows")
+    
+    pc_updated = update_pre_commit()
+    
+    if py_updated or gh_updated_template or gh_updated_root or pc_updated:
         print("Updates completed successfully.")
     else:
         print("No updates found.")
