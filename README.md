@@ -3,7 +3,7 @@
 ![Release](https://img.shields.io/github/v/tag/jtzanetatos/cookiecutter-ml-project?label=release)
 ![License](https://img.shields.io/badge/License-AGPL_v3-blue.svg)
 ![CI](https://img.shields.io/github/actions/workflow/status/jtzanetatos/cookiecutter-ml-project/cookiecutter-smoke.yml?label=smoke%20test)
-![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
+![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue)
 ![Cookiecutter](https://img.shields.io/badge/cookiecutter-template-orange)
 
 Cookiecutter template for creating production-oriented Python ML repositories with:
