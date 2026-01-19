@@ -4,7 +4,6 @@ import json
 import urllib.request
 import os
 import subprocess
-import shutil
 import tempfile
 from pathlib import Path
 
