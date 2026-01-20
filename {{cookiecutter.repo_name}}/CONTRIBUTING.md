@@ -127,7 +127,37 @@ pytest tests/
 
 ---
 
-## 5. Dependency Management
+---
+
+## 5. Commit Guidelines
+
+We use [Conventional Commits](https://www.conventionalcommits.org/) to automate versioning and changelogs.
+
+**Format**: `type(scope): subject`
+
+**Common types**:
+* `feat`: A new feature
+* `fix`: A bug fix
+* `docs`: Documentation only changes
+* `style`: Changes that do not affect the meaning of the code (white-space, formatting, etc)
+* `refactor`: A code change that neither fixes a bug nor adds a feature
+* `perf`: A code change that improves performance
+* `test`: Adding missing tests or correcting existing tests
+* `build`: Changes that affect the build system or external dependencies
+* `ci`: Changes to our CI configuration files and scripts
+* `chore`: Other changes that don't modify src or test files
+* `revert`: Reverts a previous commit
+
+**Examples**:
+* `feat(ci): add release workflow`
+* `fix(template): correct path in dockerfile`
+* `docs: update contributing guide`
+
+> **Note**: This is enforced locally via `pre-commit` hooks. If you attempt to commit a message that doesn't follow this standard, the commit will be rejected.
+
+---
+
+## 6. Dependency Management
 
 * **Adding a Package**: Add it to pyproject.toml under dependencies.
 
@@ -135,7 +165,7 @@ pytest tests/
 
 ---
 
-## 6. Definition of Done
+## 7. Definition of Done
 
 A feature or experiment is considered "Done" when:
 
