@@ -22,6 +22,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Keepalive Workflow
+        uses: gautamkrishnar/keepalive-workflow@v2
+
       - name: Run update script
         run: python tools/update_dependencies.py
 
