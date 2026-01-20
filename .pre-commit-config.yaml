@@ -16,7 +16,7 @@ repos:
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
       - id: check-added-large-files
-        args: ["--maxkb=1024"]  # guard against accidentally committing big artifacts
+        args: ["--maxkb=1024"] # guard against accidentally committing big artifacts
       - id: check-merge-conflict
       - id: check-toml
       - id: check-json
@@ -48,3 +48,8 @@ repos:
             {{cookiecutter\.repo_name}}/deployment/k8s/helm/.*|
             {{cookiecutter\.repo_name}}/deployment/k8s/.*\.yaml
           )$
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.1.0
+    hooks:
+      - id: commitizen
