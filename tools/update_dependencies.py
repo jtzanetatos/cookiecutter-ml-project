@@ -213,20 +213,31 @@ def update_workflow_files(directory):
     return updates_made
 
 def update_pre_commit():
-    """Run pre-commit autoupdate for the repository's own configuration."""
-    root_config = Path(".pre-commit-config.yaml")
+    """Run pre-commit autoupdate for the repository's own configuration and the template's."""
+    configs = [
+        Path(".pre-commit-config.yaml"),
+        Path("{{cookiecutter.repo_name}}/.pre-commit-config.yaml"),
+    ]
     
-    if root_config.exists():
-        print(f"Updating root pre-commit hooks in {root_config}...")
-        try:
-            # Check if pre-commit is installed
-            subprocess.run(["pre-commit", "--version"], check=True, capture_output=True)
-            subprocess.run(["pre-commit", "autoupdate"], check=True)
-            return True
-        except (subprocess.CalledProcessError, FileNotFoundError):
-            print("  [!] Failed to run pre-commit autoupdate (is it installed?)")
+    updated_any = False
     
-    return False
+    # Check if pre-commit is installed once
+    try:
+        subprocess.run(["pre-commit", "--version"], check=True, capture_output=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print("  [!] Failed to run pre-commit autoupdate (is it installed?)")
+        return False
+
+    for config in configs:
+        if config.exists():
+            print(f"Updating pre-commit hooks in {config}...")
+            try:
+                subprocess.run(["pre-commit", "autoupdate", "--config", str(config)], check=True)
+                updated_any = True
+            except subprocess.CalledProcessError:
+                print(f"  [!] Failed to update {config}")
+    
+    return updated_any
 
 if __name__ == "__main__":
     print("Starting dependency updates...")
