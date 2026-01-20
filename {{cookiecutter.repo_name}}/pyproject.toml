@@ -85,6 +85,7 @@ dev = [
     # dev
     "cookiecutter>=2.6",
     "dvc>=3.0",
+    "commitizen>=4.1.0",
 ]
 
 docs-mkdocs = [
@@ -141,6 +142,15 @@ line-length = 88
 # e.g., "py310", "py311", "py312"
 target-version = "{{ 'py' + cookiecutter.python_version.replace('.', '') }}" 
 extend-include = ["*.ipynb"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver"
+version_provider = "pep621"
+update_changelog_on_bump = true
+major_version_zero = true
+
 
 [tool.ruff.lint]
 # Enable the rules

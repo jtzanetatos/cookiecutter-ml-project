@@ -21,3 +21,8 @@ repos:
         args: ["--write-changes"]
         additional_dependencies:
           - tomli
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.1.0
+    hooks:
+      - id: commitizen
