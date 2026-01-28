@@ -23,7 +23,7 @@ jobs:
 
       - name: Bump version + changelog (no push)
         id: cz
-        uses: commitizen-tools/commitizen-action@v0.25.0
+        uses: commitizen-tools/commitizen-action@master
         with:
           push: false
           changelog_increment_filename: body.md
