@@ -1,0 +1,71 @@
+name: Release (tag + GitHub Release)
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  tag-and-release:
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.ref == 'release/commitizen-bump'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out merge commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Read version from pyproject.toml
+        id: ver
+        run: |
+          python - <<'PY'
+          import os, tomllib
+          with open("pyproject.toml", "rb") as f:
+            v = tomllib.load(f)["project"]["version"]
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+            out.write(f"version={v}\n")
+          PY
+
+      - name: Extract release notes from CHANGELOG.md
+        run: |
+          python - <<'PY'
+          import re
+          version = "${{ steps.ver.outputs.version }}"
+          tag = f"v{version}"
+          text = open("CHANGELOG.md", encoding="utf-8").read().splitlines()
+
+          # Find a header line that contains the version (handles common formats)
+          pat = re.compile(r"^##\s+.*\b" + re.escape(version) + r"\b")
+          start = next((i for i, line in enumerate(text) if pat.search(line)), None)
+          if start is None:
+            # Fallback: no section found; produce empty notes
+            open("body.md", "w", encoding="utf-8").write("")
+            raise SystemExit(0)
+
+          end = next((i for i in range(start + 1, len(text)) if text[i].startswith("## ")), len(text))
+          body = "\n".join(text[start+1:end]).strip() + "\n"
+          open("body.md", "w", encoding="utf-8").write(body)
+          PY
+
+      - name: Create and push tag (if missing)
+        run: |
+          TAG="v${{ steps.ver.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists. Skipping tag creation."
+          else
+            git tag "$TAG"
+            git push origin "$TAG"
+          fi
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.ver.outputs.version }}
+          body_path: body.md
