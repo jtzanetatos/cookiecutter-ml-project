@@ -1,39 +1,42 @@
-name: Release
+name: Release PR (Commitizen)
 
 on:
-    push:
-        branches:
-            - main
-        paths-ignore:
-            - "CHANGELOG.md"
-            - "pyproject.toml"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "CHANGELOG.md"
+      - "pyproject.toml"
 
 permissions:
-    contents: write
+  contents: write
+  pull-requests: write
 
 jobs:
-    bump-version:
-        if: "!startsWith(github.event.head_commit.message, 'bump:')"
-        runs-on: ubuntu-latest
-        name: "Bump version and create changelog with commitizen"
-        steps:
-            - name: Check out
-              uses: actions/checkout@v6
-              with:
-                  fetch-depth: 0
-                  token: ${{ secrets.GITHUB_TOKEN }}
+  bump-pr:
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
+    runs-on: ubuntu-latest
 
-            - name: Create bump and changelog
-              id: cz
-              uses: commitizen-tools/commitizen-action@master
-              with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
-                  changelog_increment_filename: body.md
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            - name: Release
-              uses: softprops/action-gh-release@v2
-              with:
-                  body_path: body.md
-                  tag_name: ${{ steps.cz.outputs.version }}
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bump version + changelog (no push)
+        id: cz
+        uses: commitizen-tools/commitizen-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          push: false
+          changelog_increment_filename: body.md
+
+      - name: Create/Update PR
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: release/commitizen-bump
+          title: "bump: version ${{ steps.cz.outputs.previous_version }} → ${{ steps.cz.outputs.version }}"
+          body-path: body.md
+          # Prevent body.md from being committed
+          add-paths: |
+            pyproject.toml
+            CHANGELOG.md
