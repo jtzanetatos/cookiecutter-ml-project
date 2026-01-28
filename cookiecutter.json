@@ -28,6 +28,7 @@
     "3.13"
   ],
   "_copy_without_render": [
+    ".github/**",
     "deployment/k8s/helm/**",
     "deployment/api/**",
     "deployment/scripts/**"
