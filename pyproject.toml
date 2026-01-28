@@ -1,6 +1,6 @@
 [project]
 name = "cookiecutter-ml-project"
-version = "2.1.0"
+version = "2.2.0"
 description = "A cookiecutter template for ML projects"
 readme = "README.md"
 requires-python = ">=3.9"
